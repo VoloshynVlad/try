@@ -28,67 +28,67 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.parseDocButton = new System.Windows.Forms.Button();
+            this.saveToDBButton = new System.Windows.Forms.Button();
+            this.selectFirstDBButton = new System.Windows.Forms.Button();
+            this.lecturersComboBox = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.button4 = new System.Windows.Forms.Button();
+            this.selectDocButton = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.comboBox2 = new System.Windows.Forms.ComboBox();
-            this.comboBox3 = new System.Windows.Forms.ComboBox();
+            this.groupsComboBox = new System.Windows.Forms.ComboBox();
+            this.subjectsComboBox = new System.Windows.Forms.ComboBox();
             this.label4 = new System.Windows.Forms.Label();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.firstDBViewer = new System.Windows.Forms.DataGridView();
             this.label5 = new System.Windows.Forms.Label();
-            this.dataGridView2 = new System.Windows.Forms.DataGridView();
+            this.secondDBViewer = new System.Windows.Forms.DataGridView();
             this.label6 = new System.Windows.Forms.Label();
-            this.button5 = new System.Windows.Forms.Button();
-            this.button6 = new System.Windows.Forms.Button();
-            this.button7 = new System.Windows.Forms.Button();
-            this.button8 = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
+            this.selectSecondDBButton = new System.Windows.Forms.Button();
+            this.makeQueryToFirstDBButton = new System.Windows.Forms.Button();
+            this.makeQueryToSecondDBButton = new System.Windows.Forms.Button();
+            this.compareTablesButton = new System.Windows.Forms.Button();
+            ((System.ComponentModel.ISupportInitialize)(this.firstDBViewer)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.secondDBViewer)).BeginInit();
             this.SuspendLayout();
             // 
-            // button1
+            // parseDocButton
             // 
-            this.button1.Location = new System.Drawing.Point(15, 89);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "Parse Doc";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.parseDocButton.Location = new System.Drawing.Point(15, 89);
+            this.parseDocButton.Name = "parseDocButton";
+            this.parseDocButton.Size = new System.Drawing.Size(75, 23);
+            this.parseDocButton.TabIndex = 0;
+            this.parseDocButton.Text = "Parse Doc";
+            this.parseDocButton.UseVisualStyleBackColor = true;
+            this.parseDocButton.Click += new System.EventHandler(this.parseDocButton_Click);
             // 
-            // button2
+            // saveToDBButton
             // 
-            this.button2.Enabled = false;
-            this.button2.Location = new System.Drawing.Point(96, 89);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
-            this.button2.TabIndex = 2;
-            this.button2.Text = "Save to  DB";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.saveToDBButton.Enabled = false;
+            this.saveToDBButton.Location = new System.Drawing.Point(96, 89);
+            this.saveToDBButton.Name = "saveToDBButton";
+            this.saveToDBButton.Size = new System.Drawing.Size(75, 23);
+            this.saveToDBButton.TabIndex = 2;
+            this.saveToDBButton.Text = "Save to  DB";
+            this.saveToDBButton.UseVisualStyleBackColor = true;
+            this.saveToDBButton.Click += new System.EventHandler(this.saveToDBButton_Click);
             // 
-            // button3
+            // selectFirstDBButton
             // 
-            this.button3.Location = new System.Drawing.Point(239, 88);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(75, 23);
-            this.button3.TabIndex = 3;
-            this.button3.Text = "Select DB";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            this.selectFirstDBButton.Location = new System.Drawing.Point(239, 88);
+            this.selectFirstDBButton.Name = "selectFirstDBButton";
+            this.selectFirstDBButton.Size = new System.Drawing.Size(75, 23);
+            this.selectFirstDBButton.TabIndex = 3;
+            this.selectFirstDBButton.Text = "Select DB";
+            this.selectFirstDBButton.UseVisualStyleBackColor = true;
+            this.selectFirstDBButton.Click += new System.EventHandler(this.selectFirstDBButton_Click);
             // 
-            // comboBox1
+            // lecturersComboBox
             // 
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(15, 142);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(221, 21);
-            this.comboBox1.TabIndex = 4;
+            this.lecturersComboBox.FormattingEnabled = true;
+            this.lecturersComboBox.Location = new System.Drawing.Point(15, 142);
+            this.lecturersComboBox.Name = "lecturersComboBox";
+            this.lecturersComboBox.Size = new System.Drawing.Size(221, 21);
+            this.lecturersComboBox.TabIndex = 4;
             // 
             // label1
             // 
@@ -99,15 +99,15 @@
             this.label1.TabIndex = 5;
             this.label1.Text = "Список преподавателей";
             // 
-            // button4
+            // selectDocButton
             // 
-            this.button4.Location = new System.Drawing.Point(15, 13);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(75, 23);
-            this.button4.TabIndex = 6;
-            this.button4.Text = "Select Doc";
-            this.button4.UseVisualStyleBackColor = true;
-            this.button4.Click += new System.EventHandler(this.button4_Click);
+            this.selectDocButton.Location = new System.Drawing.Point(15, 13);
+            this.selectDocButton.Name = "selectDocButton";
+            this.selectDocButton.Size = new System.Drawing.Size(75, 23);
+            this.selectDocButton.TabIndex = 6;
+            this.selectDocButton.Text = "Select Doc";
+            this.selectDocButton.UseVisualStyleBackColor = true;
+            this.selectDocButton.Click += new System.EventHandler(this.selectDocButton_Click);
             // 
             // label2
             // 
@@ -126,21 +126,21 @@
             this.label3.TabIndex = 8;
             this.label3.Text = "Список групп";
             // 
-            // comboBox2
+            // groupsComboBox
             // 
-            this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Location = new System.Drawing.Point(15, 190);
-            this.comboBox2.Name = "comboBox2";
-            this.comboBox2.Size = new System.Drawing.Size(221, 21);
-            this.comboBox2.TabIndex = 9;
+            this.groupsComboBox.FormattingEnabled = true;
+            this.groupsComboBox.Location = new System.Drawing.Point(15, 190);
+            this.groupsComboBox.Name = "groupsComboBox";
+            this.groupsComboBox.Size = new System.Drawing.Size(221, 21);
+            this.groupsComboBox.TabIndex = 9;
             // 
-            // comboBox3
+            // subjectsComboBox
             // 
-            this.comboBox3.FormattingEnabled = true;
-            this.comboBox3.Location = new System.Drawing.Point(12, 241);
-            this.comboBox3.Name = "comboBox3";
-            this.comboBox3.Size = new System.Drawing.Size(224, 21);
-            this.comboBox3.TabIndex = 10;
+            this.subjectsComboBox.FormattingEnabled = true;
+            this.subjectsComboBox.Location = new System.Drawing.Point(12, 241);
+            this.subjectsComboBox.Name = "subjectsComboBox";
+            this.subjectsComboBox.Size = new System.Drawing.Size(224, 21);
+            this.subjectsComboBox.TabIndex = 10;
             // 
             // label4
             // 
@@ -151,15 +151,15 @@
             this.label4.TabIndex = 11;
             this.label4.Text = "Список предметов";
             // 
-            // dataGridView1
+            // firstDBViewer
             // 
-            this.dataGridView1.AllowUserToAddRows = false;
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(239, 142);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.ReadOnly = true;
-            this.dataGridView1.Size = new System.Drawing.Size(1001, 214);
-            this.dataGridView1.TabIndex = 12;
+            this.firstDBViewer.AllowUserToAddRows = false;
+            this.firstDBViewer.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.firstDBViewer.Location = new System.Drawing.Point(239, 142);
+            this.firstDBViewer.Name = "firstDBViewer";
+            this.firstDBViewer.ReadOnly = true;
+            this.firstDBViewer.Size = new System.Drawing.Size(1001, 214);
+            this.firstDBViewer.TabIndex = 12;
             // 
             // label5
             // 
@@ -170,15 +170,15 @@
             this.label5.TabIndex = 13;
             this.label5.Text = "DB name: ";
             // 
-            // dataGridView2
+            // secondDBViewer
             // 
-            this.dataGridView2.AllowUserToAddRows = false;
-            this.dataGridView2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView2.Location = new System.Drawing.Point(236, 431);
-            this.dataGridView2.Name = "dataGridView2";
-            this.dataGridView2.ReadOnly = true;
-            this.dataGridView2.Size = new System.Drawing.Size(1004, 214);
-            this.dataGridView2.TabIndex = 12;
+            this.secondDBViewer.AllowUserToAddRows = false;
+            this.secondDBViewer.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.secondDBViewer.Location = new System.Drawing.Point(236, 431);
+            this.secondDBViewer.Name = "secondDBViewer";
+            this.secondDBViewer.ReadOnly = true;
+            this.secondDBViewer.Size = new System.Drawing.Size(1004, 214);
+            this.secondDBViewer.TabIndex = 12;
             // 
             // label6
             // 
@@ -189,74 +189,74 @@
             this.label6.TabIndex = 13;
             this.label6.Text = "DB name: ";
             // 
-            // button5
+            // selectSecondDBButton
             // 
-            this.button5.Location = new System.Drawing.Point(236, 380);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(75, 23);
-            this.button5.TabIndex = 3;
-            this.button5.Text = "Select DB";
-            this.button5.UseVisualStyleBackColor = true;
-            this.button5.Click += new System.EventHandler(this.button5_Click);
+            this.selectSecondDBButton.Location = new System.Drawing.Point(236, 380);
+            this.selectSecondDBButton.Name = "selectSecondDBButton";
+            this.selectSecondDBButton.Size = new System.Drawing.Size(75, 23);
+            this.selectSecondDBButton.TabIndex = 3;
+            this.selectSecondDBButton.Text = "Select DB";
+            this.selectSecondDBButton.UseVisualStyleBackColor = true;
+            this.selectSecondDBButton.Click += new System.EventHandler(this.selectSecondDBButton_Click);
             // 
-            // button6
+            // makeQueryToFirstDBButton
             // 
-            this.button6.Location = new System.Drawing.Point(318, 88);
-            this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(75, 23);
-            this.button6.TabIndex = 14;
-            this.button6.Text = "Make Query";
-            this.button6.UseVisualStyleBackColor = true;
-            this.button6.Click += new System.EventHandler(this.button6_Click);
+            this.makeQueryToFirstDBButton.Location = new System.Drawing.Point(318, 88);
+            this.makeQueryToFirstDBButton.Name = "makeQueryToFirstDBButton";
+            this.makeQueryToFirstDBButton.Size = new System.Drawing.Size(75, 23);
+            this.makeQueryToFirstDBButton.TabIndex = 14;
+            this.makeQueryToFirstDBButton.Text = "Make Query";
+            this.makeQueryToFirstDBButton.UseVisualStyleBackColor = true;
+            this.makeQueryToFirstDBButton.Click += new System.EventHandler(this.makeQueryToFirstDBButton_Click);
             // 
-            // button7
+            // makeQueryToSecondDBButton
             // 
-            this.button7.Location = new System.Drawing.Point(318, 380);
-            this.button7.Name = "button7";
-            this.button7.Size = new System.Drawing.Size(75, 23);
-            this.button7.TabIndex = 14;
-            this.button7.Text = "Make Query";
-            this.button7.UseVisualStyleBackColor = true;
-            this.button7.Click += new System.EventHandler(this.button7_Click);
+            this.makeQueryToSecondDBButton.Location = new System.Drawing.Point(318, 380);
+            this.makeQueryToSecondDBButton.Name = "makeQueryToSecondDBButton";
+            this.makeQueryToSecondDBButton.Size = new System.Drawing.Size(75, 23);
+            this.makeQueryToSecondDBButton.TabIndex = 14;
+            this.makeQueryToSecondDBButton.Text = "Make Query";
+            this.makeQueryToSecondDBButton.UseVisualStyleBackColor = true;
+            this.makeQueryToSecondDBButton.Click += new System.EventHandler(this.makeQueryToSecondDBButton_Click);
             // 
-            // button8
+            // compareTablesButton
             // 
-            this.button8.Location = new System.Drawing.Point(18, 402);
-            this.button8.Name = "button8";
-            this.button8.Size = new System.Drawing.Size(96, 23);
-            this.button8.TabIndex = 15;
-            this.button8.Text = "Compare tables";
-            this.button8.UseVisualStyleBackColor = true;
-            this.button8.Click += new System.EventHandler(this.button8_Click);
+            this.compareTablesButton.Location = new System.Drawing.Point(18, 402);
+            this.compareTablesButton.Name = "compareTablesButton";
+            this.compareTablesButton.Size = new System.Drawing.Size(96, 23);
+            this.compareTablesButton.TabIndex = 15;
+            this.compareTablesButton.Text = "Compare tables";
+            this.compareTablesButton.UseVisualStyleBackColor = true;
+            this.compareTablesButton.Click += new System.EventHandler(this.compareTablesButton_Click);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1249, 663);
-            this.Controls.Add(this.button8);
-            this.Controls.Add(this.button7);
-            this.Controls.Add(this.button6);
+            this.Controls.Add(this.compareTablesButton);
+            this.Controls.Add(this.makeQueryToSecondDBButton);
+            this.Controls.Add(this.makeQueryToFirstDBButton);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.label5);
-            this.Controls.Add(this.dataGridView2);
-            this.Controls.Add(this.dataGridView1);
+            this.Controls.Add(this.secondDBViewer);
+            this.Controls.Add(this.firstDBViewer);
             this.Controls.Add(this.label4);
-            this.Controls.Add(this.comboBox3);
-            this.Controls.Add(this.comboBox2);
+            this.Controls.Add(this.subjectsComboBox);
+            this.Controls.Add(this.groupsComboBox);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
-            this.Controls.Add(this.button4);
+            this.Controls.Add(this.selectDocButton);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.comboBox1);
-            this.Controls.Add(this.button5);
-            this.Controls.Add(this.button3);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.lecturersComboBox);
+            this.Controls.Add(this.selectSecondDBButton);
+            this.Controls.Add(this.selectFirstDBButton);
+            this.Controls.Add(this.saveToDBButton);
+            this.Controls.Add(this.parseDocButton);
             this.Name = "MainForm";
             this.Text = "Работа с консультациями онлайн без регистрации и смс";
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.firstDBViewer)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.secondDBViewer)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -264,25 +264,25 @@
 
         #endregion
 
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.Button parseDocButton;
+        private System.Windows.Forms.Button saveToDBButton;
+        private System.Windows.Forms.Button selectFirstDBButton;
+        private System.Windows.Forms.ComboBox lecturersComboBox;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Button selectDocButton;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.ComboBox comboBox2;
-        private System.Windows.Forms.ComboBox comboBox3;
+        private System.Windows.Forms.ComboBox groupsComboBox;
+        private System.Windows.Forms.ComboBox subjectsComboBox;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.DataGridView firstDBViewer;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.DataGridView dataGridView2;
+        private System.Windows.Forms.DataGridView secondDBViewer;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Button button5;
-        private System.Windows.Forms.Button button6;
-        private System.Windows.Forms.Button button7;
-        private System.Windows.Forms.Button button8;
+        private System.Windows.Forms.Button selectSecondDBButton;
+        private System.Windows.Forms.Button makeQueryToFirstDBButton;
+        private System.Windows.Forms.Button makeQueryToSecondDBButton;
+        private System.Windows.Forms.Button compareTablesButton;
     }
 }
 

@@ -16,14 +16,42 @@ namespace WordReader
         List<string> groups = new List<string>();
         List<string> subjects = new List<string>();
 
+        /// <summary>
+        /// Конструктор формы
+        /// </summary>
         public MainForm()
         {
             InitializeComponent();
         }
-
-        private void button1_Click(object sender, EventArgs e)
+ 
+        /// <summary>
+        /// Обработка события нажатия кнопки
+        /// которая выбирает текстовый документ 
+        /// формата .doc или .docx, который необходимо распарсить
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void selectDocButton_Click(object sender, EventArgs e)
         {
-            button2.Enabled = true;
+            label2.Text = "";
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "Файлы Word (*.doc; *.docx) | *.doc; *.docx";
+            ofd.ShowDialog();
+            label2.Text = ofd.FileName.ToString();
+        }
+
+        /// <summary>
+        /// Обработка события нажатия кнопки
+        /// которая занимается считыванием документа 
+        /// и созданием List'a объектов Consultation
+        /// по считанным данным заполняет 
+        /// LecturersComboBox, SubjectsComboBox и GroupsComboBox
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void parseDocButton_Click(object sender, EventArgs e)
+        {
+            saveToDBButton.Enabled = true;
             List<Word.Range> TablesRanges = new List<Word.Range>();
 
             try
@@ -113,8 +141,8 @@ namespace WordReader
                         }
                     }
 
-                    //                if (!bInTable)
-                    //                  MessageBox.Show("!!!!!! Not In Table - Paragraph number " + par.ToString() + ":" + r.Text);
+                    //if (!bInTable)
+                    //MessageBox.Show("!!!!!! Not In Table - Paragraph number " + par.ToString() + ":" + r.Text);
                 }
                 doc.Close(false);
                 word.Quit(false);
@@ -126,42 +154,47 @@ namespace WordReader
                     System.Runtime.InteropServices.Marshal.ReleaseComObject(doc);
                 if (wordApp != null)
                     System.Runtime.InteropServices.Marshal.ReleaseComObject(wordApp);
-                
+
                 doc = null;
                 word = null;
                 wordApp = null;
                 GC.Collect();
                 MessageBox.Show("done");
 
-
-                comboBox1.Items.Clear();
-                comboBox2.Items.Clear();
-                comboBox3.Items.Clear();
+                lecturersComboBox.Items.Clear();
+                groupsComboBox.Items.Clear();
+                subjectsComboBox.Items.Clear();
 
                 for (int i = 1; i < lecturers.Count; i++)
-                    comboBox1.Items.Add(lecturers[i].Trim(new Char[] { '\r', '\a' }));
+                    lecturersComboBox.Items.Add(lecturers[i].Trim(new Char[] { '\r', '\a' }));
 
                 for (int i = 1; i < groups.Count; i++)
-                    comboBox2.Items.Add(groups[i].Trim(new Char[] { '\r', '\a' }));
+                    groupsComboBox.Items.Add(groups[i].Trim(new Char[] { '\r', '\a' }));
 
                 for (int i = 1; i < subjects.Count; i++)
-                    comboBox3.Items.Add(subjects[i].Trim(new Char[] { '\r', '\a' }));
+                    subjectsComboBox.Items.Add(subjects[i].Trim(new Char[] { '\r', '\a' }));
 
-                comboBox1.SelectedIndex = 0;
-                comboBox2.SelectedIndex = 0;
-                comboBox3.SelectedIndex = 0;
+                lecturersComboBox.SelectedIndex = 0;
+                groupsComboBox.SelectedIndex = 0;
+                subjectsComboBox.SelectedIndex = 0;
             }
             catch { Exception ex; }
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        /// <summary>
+        /// Обработка события нажатия кнопки
+        /// которая создает базу данных и записывает 
+        /// в нее считанную информацию
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void saveToDBButton_Click(object sender, EventArgs e)
         {
             label5.Text = "";
             string name = DateTime.Now.ToString();
             string databaseName = Application.StartupPath + @"\" + name.Replace(':', '-') + ".db";
             //  label5.Text = "DB name: " + databaseName;
             label5.Text = databaseName;
-
 
             SQLiteConnection.CreateFile(databaseName);
             MessageBox.Show(File.Exists(databaseName) ? "База данных создана" : "Возникла ошибка при создании базы данных");
@@ -205,10 +238,57 @@ namespace WordReader
             }
             connection.Close();
             MessageBox.Show("Готово");
-            button2.Enabled = false;
+            saveToDBButton.Enabled = false;
+        }
+              
+        /// <summary>
+        /// Обработчик события нажатия кнопки
+        /// для выбора первой базы данных
+        /// с которой будет сравниваться вторая база данных
+        /// Заполнение элемента FirstDBViewer данными из базы
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>     
+        private void selectFirstDBButton_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.InitialDirectory = Directory.GetCurrentDirectory();
+            ofd.ShowDialog();
+
+            string databaseName = ofd.FileName.ToString();
+
+            SQLiteConnection connection =
+                         new SQLiteConnection(string.Format("Data Source={0};", databaseName));
+
+            SQLiteCommand cmd = new SQLiteCommand("SELECT * FROM 'consultations'", connection);
+            connection.Open();
+            cmd.ExecuteNonQuery();
+            //WHERE time = '2'
+            SQLiteDataAdapter da = new SQLiteDataAdapter(cmd);
+            DataSet ds = new DataSet();
+            try
+            {
+                da.Fill(ds);
+                DataTable dt = ds.Tables[0];
+                this.firstDBViewer.DataSource = dt;
+            }
+            catch (Exception ex) { }
+            finally
+            {
+                cmd.Dispose();
+                connection.Close();
+            }
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        /// <summary>
+        /// Обработчик события нажатия кнопки
+        /// для выбора второй базы данных
+        /// которую необходимо сравнить
+        /// Заполнение элемента SecondDBViewer данными из базы
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void selectSecondDBButton_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.ShowDialog();
@@ -228,76 +308,42 @@ namespace WordReader
             {
                 da.Fill(ds);
                 DataTable dt = ds.Tables[0];
-                this.dataGridView1.DataSource = dt;
+                this.secondDBViewer.DataSource = dt;
             }
-            catch (Exception ex)
-            {
-
-            }
+            catch (Exception ex) { }
             finally
             {
                 cmd.Dispose();
                 connection.Close();
-            }
+            }      
         }
 
+        /// <summary>
+        /// Обработка события нажатия кнопки
+        /// для создания запроса ко второй базе данных
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>     
+        private void makeQueryToSecondDBButton_Click(object sender, EventArgs e)
+        {          }
 
-        private void button4_Click(object sender, EventArgs e)
-        {
-            label2.Text = "";
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter = "Файлы Word (*.doc; *.docx) | *.doc; *.docx";
-            ofd.ShowDialog();
-            label2.Text = ofd.FileName.ToString();
-        }
+        /// <summary>
+        /// Обработка события нажатия кнопки
+        /// которая сравнивает две выборки из таблиц
+        /// и отображает разницу в них
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void compareTablesButton_Click(object sender, EventArgs e)
+        {        }
 
-        private void button6_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void button7_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void button5_Click(object sender, EventArgs e)
-        {
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.ShowDialog();
-
-            string databaseName = ofd.FileName.ToString();
-
-            SQLiteConnection connection =
-                         new SQLiteConnection(string.Format("Data Source={0};", databaseName));
-
-            SQLiteCommand cmd = new SQLiteCommand("SELECT * FROM 'consultations'", connection);
-            connection.Open();
-            cmd.ExecuteNonQuery();
-            //WHERE time = '2'
-            SQLiteDataAdapter da = new SQLiteDataAdapter(cmd);
-            DataSet ds = new DataSet();
-            try
-            {
-                da.Fill(ds);
-                DataTable dt = ds.Tables[0];
-                this.dataGridView2.DataSource = dt;
-            }
-            catch (Exception ex)
-            {
-
-            }
-            finally
-            {
-                cmd.Dispose();
-                connection.Close();
-            }
-        }
-
-        private void button8_Click(object sender, EventArgs e)
-        {
-         
-        }
+        /// <summary>
+        /// Обработка события нажатия кнопки
+        /// для создания запроса к первой базе данных
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void makeQueryToFirstDBButton_Click(object sender, EventArgs e)
+        {        }
     }
 }
-
