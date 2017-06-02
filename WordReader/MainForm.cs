@@ -15,6 +15,7 @@ namespace WordReader
         List<string> lecturers = new List<string>();
         List<string> groups = new List<string>();
         List<string> subjects = new List<string>();
+        MainController mainController;
 
         /// <summary>
         /// Конструктор формы
@@ -22,22 +23,21 @@ namespace WordReader
         public MainForm()
         {
             InitializeComponent();
+            mainController = new MainController();
         }
- 
+
+        #region Обработчики событий.
+
         /// <summary>
         /// Обработка события нажатия кнопки
         /// которая выбирает текстовый документ 
-        /// формата .doc или .docx, который необходимо распарсить
+        /// формата .doc или .docx, который необходимо распарсить.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void selectDocButton_Click(object sender, EventArgs e)
         {
-            label2.Text = "";
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter = "Файлы Word (*.doc; *.docx) | *.doc; *.docx";
-            ofd.ShowDialog();
-            label2.Text = ofd.FileName.ToString();
+            SelectDocument();
         }
 
         /// <summary>
@@ -45,11 +45,110 @@ namespace WordReader
         /// которая занимается считыванием документа 
         /// и созданием List'a объектов Consultation
         /// по считанным данным заполняет 
-        /// LecturersComboBox, SubjectsComboBox и GroupsComboBox
+        /// LecturersComboBox, SubjectsComboBox и GroupsComboBox.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void parseDocButton_Click(object sender, EventArgs e)
+        {
+            ParseDocument();
+        }
+
+        /// <summary>
+        /// Обработка события нажатия кнопки
+        /// которая создает базу данных и записывает 
+        /// в нее считанную информацию.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void saveToDBButton_Click(object sender, EventArgs e)
+        {
+            label5.Text = "";
+            this.mainController.PathDB = "";
+            string path = SelectPathToSaveDB();
+            label5.Text = path;
+            this.mainController.PathDB = path;
+
+            SaveToDB(path);
+        }
+
+        /// <summary>
+        /// Обработчик события нажатия кнопки
+        /// для выбора первой базы данных
+        /// с которой будет сравниваться вторая база данных
+        /// Заполнение элемента FirstDBViewer данными из базы.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>     
+        private void selectFirstDBButton_Click(object sender, EventArgs e)
+        {
+            string path = SelectDB();
+            this.mainController.PathDB = path;
+            FillDB(path, firstDBViewer);
+        }
+
+        /// <summary>
+        /// Обработчик события нажатия кнопки
+        /// для выбора второй базы данных
+        /// которую необходимо сравнить
+        /// Заполнение элемента SecondDBViewer данными из базы.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void selectSecondDBButton_Click(object sender, EventArgs e)
+        {
+            string path = SelectDB();
+            this.mainController.PathForComparedDB = path;
+            FillDB(path, secondDBViewer);
+        }
+
+        /// <summary>
+        /// Обработка события нажатия кнопки
+        /// для создания запроса ко второй базе данных
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>     
+        private void makeQueryToSecondDBButton_Click(object sender, EventArgs e)
+        { }
+        /// <summary>
+        /// Обработка события нажатия кнопки
+        /// которая сравнивает две выборки из таблиц
+        /// и отображает разницу в них
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void compareTablesButton_Click(object sender, EventArgs e)
+        { }
+        /// <summary>
+        /// Обработка события нажатия кнопки
+        /// для создания запроса к первой базе данных
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void makeQueryToFirstDBButton_Click(object sender, EventArgs e)
+        { }
+
+        #endregion
+
+        /// <summary>
+        /// Выбор документа формата .doc или .docx, который необходимо распарсить.
+        /// </summary>
+        private void SelectDocument()
+        {
+            label2.Text = "";
+            this.mainController.SelectedDocument = "";
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "Файлы Word (*.doc; *.docx) | *.doc; *.docx";
+            ofd.ShowDialog();
+            string path = ofd.FileName;
+            label2.Text = path;
+            this.mainController.SelectedDocument = path;
+        }
+
+        /// <summary>
+        /// Парсинг документа Word.
+        /// </summary>
+        private void ParseDocument()
         {
             saveToDBButton.Enabled = true;
             List<Word.Range> TablesRanges = new List<Word.Range>();
@@ -59,7 +158,12 @@ namespace WordReader
                 Word.Application word = new Word.Application();
                 object missing = Type.Missing;
                 object filename = label2.Text;
-                Word.Document doc = word.Documents.Open(ref filename, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing);
+                Word.Document doc = word.Documents.Open(ref filename, ref missing, ref missing,
+                                                        ref missing, ref missing, ref missing,
+                                                        ref missing, ref missing, ref missing,
+                                                        ref missing, ref missing, ref missing,
+                                                        ref missing, ref missing, ref missing,
+                                                        ref missing);
 
                 var wordApp = new Microsoft.Office.Interop.Word.Application();
 
@@ -69,81 +173,74 @@ namespace WordReader
                     TablesRanges.Add(TRange);
                 }
 
-                int c = 0;
-                string Name = "", Subject = "", Group = "", Date = "", Time = "", Place = "", Addition = "";
+                int cellCounter = 0;
+                string name = "", subject = "", group = "", date = "", time = "", place = "", addition = "";
 
-                Boolean bInTable;
                 int p = doc.Paragraphs.Count;
                 for (int par = 1; par <= doc.Paragraphs.Count; par++)
                 {
-                    bInTable = false;
                     Word.Range r = doc.Paragraphs[par].Range;
-
 
                     foreach (Word.Range range in TablesRanges)
                     {
                         if (r.Start >= range.Start && r.Start <= range.End)
                         {
-                            c++;
+                            cellCounter++;
 
-                            if (c == 2 && r.Text.ToString() != "\r\a")
+                            if (cellCounter == 2 && r.Text.ToString() != "\r\a")
                             {
-                                Name = r.Text.ToString();
-                                if (!lecturers.Contains(Name))
-                                    lecturers.Add(Name);
+                                name = r.Text.ToString();
+                                if (!lecturers.Contains(name))
+                                    lecturers.Add(name);
                             }
-                            //проверяем название предмета
-                            if (c == 3 && r.Text.ToString() != "\r\a")
+
+                            if (cellCounter == 3 && r.Text.ToString() != "\r\a")
                             {
-                                Subject = r.Text.ToString();
-                                if (!subjects.Contains(Subject))
-                                    subjects.Add(Subject);
+                                subject = r.Text.ToString();
+                                if (!subjects.Contains(subject))
+                                    subjects.Add(subject);
                             }
-                            //проверяем название группы
-                            if (c == 4 && r.Text.ToString() != "\r\a")
+
+                            if (cellCounter == 4 && r.Text.ToString() != "\r\a")
                             {
-                                Group = r.Text.ToString();
-                                if (!groups.Contains(Group))
-                                    groups.Add(Group);
+                                group = r.Text.ToString();
+                                if (!groups.Contains(group))
+                                    groups.Add(group);
                             }
-                            //проверяем дату
-                            if (c == 5 && r.Text.ToString() != "\r\a")
+
+                            if (cellCounter == 5 && r.Text.ToString() != "\r\a")
                             {
-                                Date = r.Text.ToString();
+                                date = r.Text.ToString();
                             }
-                            //проверяем пару
-                            if (c == 6 && r.Text.ToString() != "\r\a")
+
+                            if (cellCounter == 6 && r.Text.ToString() != "\r\a")
                             {
-                                Time = r.Text.ToString();
+                                time = r.Text.ToString();
                             }
-                            //проверяем место проведения конс
-                            if (c == 7 && r.Text.ToString() != "\r\a")
+
+                            if (cellCounter == 7 && r.Text.ToString() != "\r\a")
                             {
-                                Place = r.Text.ToString();
+                                place = r.Text.ToString();
                             }
-                            //примечание
-                            if (c == 8)
+
+                            if (cellCounter == 8)
                             {
                                 if (r.Text.ToString() == "\r\a")
-                                    Addition = "-";
+                                    addition = "-";
                                 else
-                                    Addition = r.Text.ToString();
+                                    addition = r.Text.ToString();
                             }
-                            if (c == 9)
+                            if (cellCounter == 9)
                             {
-                                Consultation cons = new Consultation(Name, Subject, Group, Date, Time, Place, Addition);
+                                Consultation cons = new Consultation(name, subject, group, date,
+                                                                     time, place, addition);
                                 consultations.Add(cons);
-                                c = 0;
+                                cellCounter = 0;
                             }
-
-                            bInTable = true;
-                            break;
                         }
                     }
-
-                    //if (!bInTable)
-                    //MessageBox.Show("!!!!!! Not In Table - Paragraph number " + par.ToString() + ":" + r.Text);
                 }
+
                 doc.Close(false);
                 word.Quit(false);
                 wordApp.Quit(false);
@@ -159,7 +256,7 @@ namespace WordReader
                 word = null;
                 wordApp = null;
                 GC.Collect();
-                MessageBox.Show("done");
+                //MessageBox.Show("done");
 
                 lecturersComboBox.Items.Clear();
                 groupsComboBox.Items.Clear();
@@ -178,172 +275,138 @@ namespace WordReader
                 groupsComboBox.SelectedIndex = 0;
                 subjectsComboBox.SelectedIndex = 0;
             }
-            catch { Exception ex; }
-        }
-
-        /// <summary>
-        /// Обработка события нажатия кнопки
-        /// которая создает базу данных и записывает 
-        /// в нее считанную информацию
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void saveToDBButton_Click(object sender, EventArgs e)
-        {
-            label5.Text = "";
-            string name = DateTime.Now.ToString();
-            string databaseName = Application.StartupPath + @"\" + name.Replace(':', '-') + ".db";
-            //  label5.Text = "DB name: " + databaseName;
-            label5.Text = databaseName;
-
-            SQLiteConnection.CreateFile(databaseName);
-            MessageBox.Show(File.Exists(databaseName) ? "База данных создана" : "Возникла ошибка при создании базы данных");
-
-            SQLiteConnection connection =
-                           new SQLiteConnection(string.Format("Data Source={0};", databaseName));
-
-            SQLiteCommand command =
-                    new SQLiteCommand("CREATE TABLE consultations (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, subject TEXT, groop TEXT, date TEXT, time TEXT, place TEXT, addition TEXT);", connection);
-            connection.Open();
-            command.ExecuteNonQuery();
-
-
-            SQLiteCommand insert_command = new SQLiteCommand("INSERT INTO 'consultations' ('name', 'subject', 'groop', 'date', 'time', 'place', 'addition') VALUES (?, ?, ?, ?, ?, ?, ?);", connection);
-
-            for (int i = 1; i < consultations.Count; i++)
+            catch (Exception ex)
             {
-
-                insert_command.Parameters.Add("@Name", DbType.String);
-                insert_command.Parameters.AddWithValue("@Name", consultations[i].Lecturer.Trim(new Char[] { '\r', '\a' }));
-
-                insert_command.Parameters.Add("@Subject", DbType.String);
-                insert_command.Parameters.AddWithValue("@Subject", consultations[i].Subject.Trim(new Char[] { '\r', '\a' }));
-
-                insert_command.Parameters.Add("@Groop", DbType.String);
-                insert_command.Parameters.AddWithValue("@Groop", consultations[i].Group.Trim(new Char[] { '\r', '\a' }));
-
-                insert_command.Parameters.Add("@Date", DbType.String);
-                insert_command.Parameters.AddWithValue("@Date", consultations[i].Date.Trim(new Char[] { '\r', '\a' }));
-
-                insert_command.Parameters.Add("@Time", DbType.String);
-                insert_command.Parameters.AddWithValue("@Time", consultations[i].Time.Trim(new Char[] { '\r', '\a' }));
-
-                insert_command.Parameters.Add("@Place", DbType.String);
-                insert_command.Parameters.AddWithValue("@Place", consultations[i].Place.Trim(new Char[] { '\r', '\a' }));
-
-                insert_command.Parameters.Add("@Addition", DbType.String);
-                insert_command.Parameters.AddWithValue("@Addition", consultations[i].Addition.Trim(new Char[] { '\r', '\a' }));
-
-                insert_command.ExecuteNonQuery();
             }
-            connection.Close();
-            MessageBox.Show("Готово");
-            saveToDBButton.Enabled = false;
         }
-              
+
         /// <summary>
-        /// Обработчик события нажатия кнопки
-        /// для выбора первой базы данных
-        /// с которой будет сравниваться вторая база данных
-        /// Заполнение элемента FirstDBViewer данными из базы
+        /// Выбор базы данных и загрузка в datGridView.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>     
-        private void selectFirstDBButton_Click(object sender, EventArgs e)
-        {
+        private string SelectDB()
+        {//TODO dialogresult
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.InitialDirectory = Directory.GetCurrentDirectory();
             ofd.ShowDialog();
 
-            string databaseName = ofd.FileName.ToString();
-
-            SQLiteConnection connection =
-                         new SQLiteConnection(string.Format("Data Source={0};", databaseName));
-
-            SQLiteCommand cmd = new SQLiteCommand("SELECT * FROM 'consultations'", connection);
-            connection.Open();
-            cmd.ExecuteNonQuery();
-            //WHERE time = '2'
-            SQLiteDataAdapter da = new SQLiteDataAdapter(cmd);
-            DataSet ds = new DataSet();
-            try
-            {
-                da.Fill(ds);
-                DataTable dt = ds.Tables[0];
-                this.firstDBViewer.DataSource = dt;
-            }
-            catch (Exception ex) { }
-            finally
-            {
-                cmd.Dispose();
-                connection.Close();
-            }
+            return ofd.FileName;
         }
 
         /// <summary>
-        /// Обработчик события нажатия кнопки
-        /// для выбора второй базы данных
-        /// которую необходимо сравнить
-        /// Заполнение элемента SecondDBViewer данными из базы
+        /// Создание и запись данных в базу данных.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void selectSecondDBButton_Click(object sender, EventArgs e)
+        private string SelectPathToSaveDB()
         {
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.ShowDialog();
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Filter = "Файлы SQLite (*.db) | *.db";
+            sfd.FileName = DateTime.Now.ToString().Replace(':', '-') + ".db";
+            DialogResult dr = sfd.ShowDialog();
 
-            string databaseName = ofd.FileName.ToString();
+            if (dr == DialogResult.OK)
+            {
+                return sfd.FileName;
+            }
+            else
+            {
+                return "";
+            }
+        }
 
-            SQLiteConnection connection =
-                         new SQLiteConnection(string.Format("Data Source={0};", databaseName));
+        private void SaveToDB(string path)
+        {
+            bool alreadyExist = File.Exists(path);
 
-            SQLiteCommand cmd = new SQLiteCommand("SELECT * FROM 'consultations'", connection);
-            connection.Open();
-            cmd.ExecuteNonQuery();
-            //WHERE time = '2'
-            SQLiteDataAdapter da = new SQLiteDataAdapter(cmd);
-            DataSet ds = new DataSet();
+            if (alreadyExist)
+            {
+                MessageBox.Show("База данных c таким названием уже существует");
+                return;
+            }
+            //MessageBox.Show(File.Exists(path) ? "База данных создана" : "Возникла ошибка при создании базы данных");
+
+            SQLiteConnection.CreateFile(path);
+            SQLiteConnection connection = new SQLiteConnection(string.Format("Data Source={0};", path));
+
+            string createTableQuery = "CREATE TABLE consultations (id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                        + "name TEXT, subject TEXT, groop TEXT, date TEXT, time TEXT, place TEXT, addition TEXT);";
+
+            SQLiteCommand command = new SQLiteCommand(createTableQuery, connection);
+
             try
             {
+                connection.Open();
+                command.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+            }
+
+            string insertRowToDB = "INSERT INTO 'consultations' ('name', 'subject', 'groop', 'date', 'time'," +
+                                   "'place', 'addition') VALUES (?, ?, ?, ?, ?, ?, ?);";
+
+            SQLiteCommand insert_command = new SQLiteCommand(insertRowToDB, connection);
+
+            for (int i = 1; i < consultations.Count; i++)
+            {
+                insert_command.Parameters.Add("@Name", DbType.String);
+                insert_command.Parameters.AddWithValue("@Name", consultations[i].Lecturer.Trim('\r', '\a'));
+
+                insert_command.Parameters.Add("@Subject", DbType.String);
+                insert_command.Parameters.AddWithValue("@Subject", consultations[i].Subject.Trim('\r', '\a'));
+
+                insert_command.Parameters.Add("@Groop", DbType.String);
+                insert_command.Parameters.AddWithValue("@Groop", consultations[i].Group.Trim('\r', '\a'));
+
+                insert_command.Parameters.Add("@Date", DbType.String);
+                insert_command.Parameters.AddWithValue("@Date", consultations[i].Date.Trim('\r', '\a'));
+
+                insert_command.Parameters.Add("@Time", DbType.String);
+                insert_command.Parameters.AddWithValue("@Time", consultations[i].Time.Trim('\r', '\a'));
+
+                insert_command.Parameters.Add("@Place", DbType.String);
+                insert_command.Parameters.AddWithValue("@Place", consultations[i].Place.Trim('\r', '\a'));
+
+                insert_command.Parameters.Add("@Addition", DbType.String);
+                insert_command.Parameters.AddWithValue("@Addition", consultations[i].Addition.Trim('\r', '\a'));
+
+                try
+                {
+                    insert_command.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                }
+            }
+            connection.Close();
+            //saveToDBButton.Enabled = false;
+            //MessageBox.Show("Готово");
+        }
+
+        private void FillDB(string pathToDB, DataGridView dataGridView)
+        {
+            string databaseName = pathToDB;
+
+            SQLiteConnection connection = new SQLiteConnection(string.Format("Data Source={0};", databaseName));
+
+            SQLiteCommand cmd = new SQLiteCommand("SELECT * FROM 'consultations'", connection);
+            DataSet ds = new DataSet();
+
+            try
+            {
+                connection.Open();
+                cmd.ExecuteNonQuery();
+                SQLiteDataAdapter da = new SQLiteDataAdapter(cmd);
                 da.Fill(ds);
                 DataTable dt = ds.Tables[0];
-                this.secondDBViewer.DataSource = dt;
+                dataGridView.DataSource = dt;
             }
-            catch (Exception ex) { }
+            catch (Exception ex)
+            {
+            }
             finally
             {
                 cmd.Dispose();
                 connection.Close();
-            }      
+            }
         }
-
-        /// <summary>
-        /// Обработка события нажатия кнопки
-        /// для создания запроса ко второй базе данных
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>     
-        private void makeQueryToSecondDBButton_Click(object sender, EventArgs e)
-        {          }
-
-        /// <summary>
-        /// Обработка события нажатия кнопки
-        /// которая сравнивает две выборки из таблиц
-        /// и отображает разницу в них
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void compareTablesButton_Click(object sender, EventArgs e)
-        {        }
-
-        /// <summary>
-        /// Обработка события нажатия кнопки
-        /// для создания запроса к первой базе данных
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void makeQueryToFirstDBButton_Click(object sender, EventArgs e)
-        {        }
     }
 }
