@@ -72,6 +72,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Consultation.cs" />
+    <Compile Include="DbProvider.cs" />
     <Compile Include="MainController.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>

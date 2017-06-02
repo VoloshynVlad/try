@@ -63,7 +63,6 @@
             // 
             // saveToDBButton
             // 
-            this.saveToDBButton.Enabled = false;
             this.saveToDBButton.Location = new System.Drawing.Point(96, 89);
             this.saveToDBButton.Name = "saveToDBButton";
             this.saveToDBButton.Size = new System.Drawing.Size(75, 23);
