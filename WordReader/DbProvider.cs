@@ -8,18 +8,27 @@ using System.Data;
 
 namespace WordReader
 {
+    /// <summary>
+    /// Класс описывающий работу с базой данных
+    /// </summary>
     class DbProvider
     {
+        /// <summary>
+        /// Конструктор
+        /// </summary>
         public DbProvider()
         {
 
         }
 
-
-
+        /// <summary>
+        /// Сохранение в базу данных.
+        /// </summary>
+        /// <param name="path">Путь, где хранить базу данных.</param>
+        /// <param name="consultations">Массив консультаций.</param>
+        /// <returns>Истина, если данные записаны успешно.</returns>
         internal bool SaveToDB(string path, Consultation[] consultations)
         {
-
             SQLiteConnection.CreateFile(path);
             SQLiteConnection connection = new SQLiteConnection(string.Format("Data Source={0};", path));
 
@@ -77,6 +86,11 @@ namespace WordReader
             return true;
         }
 
+        /// <summary>
+        /// Заполнение DataTable из базы данных.
+        /// </summary>
+        /// <param name="pathToDB">Путь к базе данных.</param>
+        /// <returns>DataTable.</returns>
         internal DataTable FillDB(string pathToDB)
         {
             string databaseName = pathToDB;

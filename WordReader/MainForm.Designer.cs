@@ -47,8 +47,12 @@
             this.makeQueryToFirstDBButton = new System.Windows.Forms.Button();
             this.makeQueryToSecondDBButton = new System.Windows.Forms.Button();
             this.compareTablesButton = new System.Windows.Forms.Button();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.parsingStatusBar = new System.Windows.Forms.ToolStripProgressBar();
+            this.parsingStatusStrip = new System.Windows.Forms.ToolStripStatusLabel();
             ((System.ComponentModel.ISupportInitialize)(this.firstDBViewer)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.secondDBViewer)).BeginInit();
+            this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // parseDocButton
@@ -83,6 +87,7 @@
             // 
             // lecturersComboBox
             // 
+            this.lecturersComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.lecturersComboBox.FormattingEnabled = true;
             this.lecturersComboBox.Location = new System.Drawing.Point(15, 142);
             this.lecturersComboBox.Name = "lecturersComboBox";
@@ -127,6 +132,7 @@
             // 
             // groupsComboBox
             // 
+            this.groupsComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.groupsComboBox.FormattingEnabled = true;
             this.groupsComboBox.Location = new System.Drawing.Point(15, 190);
             this.groupsComboBox.Name = "groupsComboBox";
@@ -135,6 +141,7 @@
             // 
             // subjectsComboBox
             // 
+            this.subjectsComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.subjectsComboBox.FormattingEnabled = true;
             this.subjectsComboBox.Location = new System.Drawing.Point(12, 241);
             this.subjectsComboBox.Name = "subjectsComboBox";
@@ -228,11 +235,33 @@
             this.compareTablesButton.UseVisualStyleBackColor = true;
             this.compareTablesButton.Click += new System.EventHandler(this.compareTablesButton_Click);
             // 
+            // statusStrip1
+            // 
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.parsingStatusBar,
+            this.parsingStatusStrip});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 641);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(1249, 22);
+            this.statusStrip1.TabIndex = 16;
+            this.statusStrip1.Text = "statusStrip1";
+            // 
+            // parsingStatusBar
+            // 
+            this.parsingStatusBar.Name = "parsingStatusBar";
+            this.parsingStatusBar.Size = new System.Drawing.Size(100, 16);
+            // 
+            // parsingStatusStrip
+            // 
+            this.parsingStatusStrip.Name = "parsingStatusStrip";
+            this.parsingStatusStrip.Size = new System.Drawing.Size(0, 17);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1249, 663);
+            this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.compareTablesButton);
             this.Controls.Add(this.makeQueryToSecondDBButton);
             this.Controls.Add(this.makeQueryToFirstDBButton);
@@ -256,6 +285,8 @@
             this.Text = "Работа с консультациями онлайн без регистрации и смс";
             ((System.ComponentModel.ISupportInitialize)(this.firstDBViewer)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.secondDBViewer)).EndInit();
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -282,6 +313,9 @@
         private System.Windows.Forms.Button makeQueryToFirstDBButton;
         private System.Windows.Forms.Button makeQueryToSecondDBButton;
         private System.Windows.Forms.Button compareTablesButton;
+        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.ToolStripProgressBar parsingStatusBar;
+        private System.Windows.Forms.ToolStripStatusLabel parsingStatusStrip;
     }
 }
 

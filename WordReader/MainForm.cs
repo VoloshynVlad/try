@@ -48,6 +48,8 @@ namespace WordReader
         private void parseDocButton_Click(object sender, EventArgs e)
         {
             ParseDocument();
+            BindingSource bind = new BindingSource { DataSource = this.mainController.Consultations }; 
+            firstDBViewer.DataSource = bind;
         }
 
         /// <summary>
@@ -186,13 +188,13 @@ namespace WordReader
         private void ParseDocument()
         {
             //saveToDBButton.Enabled = true;
-            
+            parsingStatusStrip.Text = "Parsing started...";
             //нужно сделать проверку выполнения правильности работы функции ParseDocument
             this.mainController.ParseDocument();
-
+            
             lecturersComboBox.Items.Clear();
             groupsComboBox.Items.Clear();
-            subjectsComboBox.Items.Clear();
+            subjectsComboBox.Items.Clear();                       
 
             string[] lecturers = this.mainController.Lecturers;
             string[] groups = this.mainController.Groups;
@@ -200,7 +202,7 @@ namespace WordReader
 
             for (int i = 1; i < lecturers.Length; i++)
                 lecturersComboBox.Items.Add(lecturers[i].Trim(new Char[] { '\r', '\a' }));
-
+            
             for (int i = 1; i < groups.Length; i++)
                 groupsComboBox.Items.Add(groups[i].Trim(new Char[] { '\r', '\a' }));
 
@@ -210,6 +212,8 @@ namespace WordReader
             lecturersComboBox.SelectedIndex = 0;
             groupsComboBox.SelectedIndex = 0;
             subjectsComboBox.SelectedIndex = 0;
+
+            parsingStatusStrip.Text = "Done!";
         }
     }
 }

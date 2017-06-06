@@ -9,6 +9,9 @@ using Word = Microsoft.Office.Interop.Word;
 
 namespace WordReader
 {
+    /// <summary>
+    /// Класс описывающий контроллер
+    /// </summary>
     class MainController
     {
         public string SelectedDocument { get; set; }
@@ -17,10 +20,24 @@ namespace WordReader
         public readonly string ApplicationPath;
         List<Consultation> consultations = new List<Consultation>();
 
+        /// <summary>
+        /// Свойство get возвращающее массив консультаций.
+        /// </summary>
+        public Consultation[] Consultations
+        {
+            get
+        {
+            return consultations.ToArray();
+            }
+        }
+
         private DbProvider dbProvider;
 
         List<string> lecturers = new List<string>();
         
+        /// <summary>
+        /// Свойство get возвращающее массив лекторов.
+        /// </summary>
         public string[] Lecturers
         {
             get
@@ -31,6 +48,9 @@ namespace WordReader
 
         List<string> groups = new List<string>();
 
+        /// <summary>
+        /// Свойство get возвращающее массив групп.
+        /// </summary>
         public string[] Groups
         {
             get
@@ -40,8 +60,9 @@ namespace WordReader
         }
 
         List<string> subjects = new List<string>();
+
         /// <summary>
-        /// 
+        /// Свойство get возвращающее массив предметов.
         /// </summary>
         public string[] Subjects
         {
@@ -61,10 +82,10 @@ namespace WordReader
         }
 
         /// <summary>
-        /// 
+        /// Сохранение в базу данных.
         /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
+        /// <param name="path">Путь к базе данных.</param>
+        /// <returns>Истина, если сохранен успешно. Ложь, если база уже существует.</returns>
         public bool SaveToDB(string path)
         {
             bool alreadyExist = File.Exists(path);
@@ -78,11 +99,19 @@ namespace WordReader
             //MessageBox.Show("Готово");
         }
 
+        /// <summary>
+        /// Заполнение DataTable из базы данных.
+        /// </summary>
+        /// <param name="pathToDB">Путь к базе данных.</param>
+        /// <returns>DataTable.</returns>
         public DataTable FillDB(string pathToDB)
         {
             return this.dbProvider.FillDB(pathToDB);
         }
 
+        /// <summary>
+        /// Выполняет парсинг документа.
+        /// </summary>
         internal void ParseDocument()
         {
             List<Word.Range> TablesRanges = new List<Word.Range>();
