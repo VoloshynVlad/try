@@ -47,9 +47,17 @@ namespace WordReader
         /// <param name="e"></param>
         private void parseDocButton_Click(object sender, EventArgs e)
         {
-            ParseDocument();
-            BindingSource bind = new BindingSource { DataSource = this.mainController.Consultations }; 
-            firstDBViewer.DataSource = bind;
+                this.mainController.ClearConsultationArray();
+
+                lecturersComboBox.Items.Clear();
+                subjectsComboBox.Items.Clear();
+                groupsComboBox.Items.Clear();
+
+                ParseDocument();
+
+
+                BindingSource bind = new BindingSource { DataSource = this.mainController.Consultations };
+                firstDBViewer.DataSource = bind;             
         }
 
         /// <summary>
@@ -62,15 +70,21 @@ namespace WordReader
         private void saveToDBButton_Click(object sender, EventArgs e)
         {
             // TODO: вынести в отдельный метод
+            try
+            {
+                label5.Text = "";
+                this.mainController.PathDB = "";
+                string path = SelectPathToSaveDB();
+                label5.Text = path;
+                this.mainController.PathDB = path;
 
-            label5.Text = "";
-            this.mainController.PathDB = "";
-            string path = SelectPathToSaveDB();
-            label5.Text = path;
-            this.mainController.PathDB = path;
-
-            if (!this.mainController.SaveToDB(path))
-                MessageBox.Show("База данных c таким названием уже существует");
+                if (!this.mainController.SaveToDB(path))
+                    MessageBox.Show("База данных c таким названием уже существует");
+            }
+            catch (ArgumentException exp)
+            {
+                MessageBox.Show("Пустое имя пути не допускается.");
+            }
         }
 
         /// <summary>
@@ -102,7 +116,7 @@ namespace WordReader
             this.mainController.PathForComparedDB = path;
             secondDBViewer.DataSource = mainController.FillDB(path);
         }
-        
+
         /// <summary>
         /// Обработка события нажатия кнопки
         /// для создания запроса ко второй базе данных
@@ -111,7 +125,7 @@ namespace WordReader
         /// <param name="e"></param>     
         private void makeQueryToSecondDBButton_Click(object sender, EventArgs e)
         { }
-        
+
         /// <summary>
         /// Обработка события нажатия кнопки
         /// которая сравнивает две выборки из таблиц
@@ -120,7 +134,11 @@ namespace WordReader
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void compareTablesButton_Click(object sender, EventArgs e)
-        { }
+        {
+            if (object.ReferenceEquals(this.mainController.Consultations, this.mainController.Consultations))
+                Console.WriteLine("Same objects");
+        
+        }
 
         /// <summary>
         /// Обработка события нажатия кнопки
@@ -132,7 +150,7 @@ namespace WordReader
         { }
 
         #endregion
-        
+
         /// <summary>
         /// Выбор базы данных и загрузка в datGridView.
         /// </summary>
@@ -176,10 +194,18 @@ namespace WordReader
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.InitialDirectory = this.mainController.ApplicationPath;
             ofd.Filter = "Файлы Word (*.doc; *.docx) | *.doc; *.docx";
-            ofd.ShowDialog();
-            string path = ofd.FileName;
-            label2.Text = path;
-            this.mainController.SelectedDocument = path;
+            DialogResult dr = ofd.ShowDialog();
+
+            if (dr == DialogResult.OK)
+            {
+                string path = ofd.FileName;
+                label2.Text = path;
+                this.mainController.SelectedDocument = path;
+            }
+            else
+            {
+                string path = null;
+            }
         }
 
         /// <summary>
@@ -187,33 +213,37 @@ namespace WordReader
         /// </summary>
         private void ParseDocument()
         {
-            //saveToDBButton.Enabled = true;
             parsingStatusStrip.Text = "Parsing started...";
             //нужно сделать проверку выполнения правильности работы функции ParseDocument
-            this.mainController.ParseDocument();
-            
-            lecturersComboBox.Items.Clear();
-            groupsComboBox.Items.Clear();
-            subjectsComboBox.Items.Clear();                       
+            if (this.mainController.ParseDocument() == "OK")
+            {
+                lecturersComboBox.Items.Clear();
+                groupsComboBox.Items.Clear();
+                subjectsComboBox.Items.Clear();
 
-            string[] lecturers = this.mainController.Lecturers;
-            string[] groups = this.mainController.Groups;
-            string[] subjects = this.mainController.Subjects;
+                string[] lecturers = this.mainController.Lecturers;
+                string[] groups = this.mainController.Groups;
+                string[] subjects = this.mainController.Subjects;
 
-            for (int i = 1; i < lecturers.Length; i++)
-                lecturersComboBox.Items.Add(lecturers[i].Trim(new Char[] { '\r', '\a' }));
-            
-            for (int i = 1; i < groups.Length; i++)
-                groupsComboBox.Items.Add(groups[i].Trim(new Char[] { '\r', '\a' }));
+                for (int i = 1; i < lecturers.Length; i++)
+                    lecturersComboBox.Items.Add(lecturers[i].Trim(new Char[] { '\r', '\a' }));
 
-            for (int i = 1; i < subjects.Length; i++)
-                subjectsComboBox.Items.Add(subjects[i].Trim(new Char[] { '\r', '\a' }));
+                for (int i = 1; i < groups.Length; i++)
+                    groupsComboBox.Items.Add(groups[i].Trim(new Char[] { '\r', '\a' }));
 
-            lecturersComboBox.SelectedIndex = 0;
-            groupsComboBox.SelectedIndex = 0;
-            subjectsComboBox.SelectedIndex = 0;
+                for (int i = 1; i < subjects.Length; i++)
+                    subjectsComboBox.Items.Add(subjects[i].Trim(new Char[] { '\r', '\a' }));
 
-            parsingStatusStrip.Text = "Done!";
+                lecturersComboBox.SelectedIndex = 0;
+                groupsComboBox.SelectedIndex = 0;
+                subjectsComboBox.SelectedIndex = 0;
+
+                parsingStatusStrip.Text = "Done!";
+            }
+            else
+            {
+                MessageBox.Show(this.mainController.ParseDocument());
+            }
         }
     }
 }

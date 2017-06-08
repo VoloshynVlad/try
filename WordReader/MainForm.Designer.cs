@@ -160,6 +160,7 @@
             // firstDBViewer
             // 
             this.firstDBViewer.AllowUserToAddRows = false;
+            this.firstDBViewer.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
             this.firstDBViewer.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.firstDBViewer.Location = new System.Drawing.Point(239, 142);
             this.firstDBViewer.Name = "firstDBViewer";
@@ -179,6 +180,7 @@
             // secondDBViewer
             // 
             this.secondDBViewer.AllowUserToAddRows = false;
+            this.secondDBViewer.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
             this.secondDBViewer.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.secondDBViewer.Location = new System.Drawing.Point(236, 431);
             this.secondDBViewer.Name = "secondDBViewer";
@@ -283,6 +285,7 @@
             this.Controls.Add(this.parseDocButton);
             this.Name = "MainForm";
             this.Text = "Работа с консультациями онлайн без регистрации и смс";
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             ((System.ComponentModel.ISupportInitialize)(this.firstDBViewer)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.secondDBViewer)).EndInit();
             this.statusStrip1.ResumeLayout(false);
