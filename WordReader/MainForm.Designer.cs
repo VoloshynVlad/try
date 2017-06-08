@@ -284,7 +284,7 @@
             this.Controls.Add(this.saveToDBButton);
             this.Controls.Add(this.parseDocButton);
             this.Name = "MainForm";
-            this.Text = "Работа с консультациями онлайн без регистрации и смс";
+            this.Text = "Работа с консультациями";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             ((System.ComponentModel.ISupportInitialize)(this.firstDBViewer)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.secondDBViewer)).EndInit();

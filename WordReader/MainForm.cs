@@ -47,17 +47,26 @@ namespace WordReader
         /// <param name="e"></param>
         private void parseDocButton_Click(object sender, EventArgs e)
         {
-                this.mainController.ClearConsultationArray();
 
-                lecturersComboBox.Items.Clear();
-                subjectsComboBox.Items.Clear();
-                groupsComboBox.Items.Clear();
+            this.mainController.ClearConsultationArray();
 
-                ParseDocument();
+            lecturersComboBox.Items.Clear();
+            subjectsComboBox.Items.Clear();
+            groupsComboBox.Items.Clear();
+
+            ParseDocument();
 
 
+            if (firstDBViewer.RowCount == 0)
+            {
                 BindingSource bind = new BindingSource { DataSource = this.mainController.Consultations };
-                firstDBViewer.DataSource = bind;             
+                firstDBViewer.DataSource = bind;
+            }
+            else
+            {
+                BindingSource bind = new BindingSource { DataSource = this.mainController.Consultations };
+                secondDBViewer.DataSource = bind;
+            }
         }
 
         /// <summary>
@@ -135,9 +144,30 @@ namespace WordReader
         /// <param name="e"></param>
         private void compareTablesButton_Click(object sender, EventArgs e)
         {
-            if (object.ReferenceEquals(this.mainController.Consultations, this.mainController.Consultations))
-                Console.WriteLine("Same objects");
-        
+            if (firstDBViewer.RowCount == secondDBViewer.RowCount)
+            {
+                for (int i = 0; i < firstDBViewer.RowCount; i++)
+                {
+                    for (int j = 0; j < secondDBViewer.ColumnCount; j++)
+                    {
+                        string first = firstDBViewer.Rows[i].Cells[j].Value.ToString();
+                        string second = secondDBViewer.Rows[i].Cells[j].Value.ToString();
+                        if (first == second) 
+                        {
+                            firstDBViewer.Rows[i].Cells[j].Style.BackColor = Color.Green;
+                            secondDBViewer.Rows[i].Cells[j].Style.BackColor = Color.Green;
+                        }
+                        else
+                        {
+                            for (int k = 0; k < secondDBViewer.ColumnCount; k++)
+                            {
+                                secondDBViewer.Rows[i].Cells[k].Style.BackColor = Color.Wheat;
+                                firstDBViewer.Rows[i].Cells[k].Style.BackColor = Color.Red;
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         /// <summary>

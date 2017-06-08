@@ -33,7 +33,6 @@ namespace WordReader
         }
 
         List<Consultation> consultationsSecondary = new List<Consultation>();
-
         public Consultation[] ConsultationsSecondary
         {
             get
@@ -41,6 +40,7 @@ namespace WordReader
                 return consultationsSecondary.ToArray();
             }
         }
+
 
         private DbProvider dbProvider;
 
