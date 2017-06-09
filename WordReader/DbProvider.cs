@@ -32,8 +32,10 @@ namespace WordReader
             SQLiteConnection.CreateFile(path);
             SQLiteConnection connection = new SQLiteConnection(string.Format("Data Source={0};", path));
 
-            string createTableQuery = "CREATE TABLE consultations (id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                        + "name TEXT, subject TEXT, groop TEXT, date TEXT, time TEXT, place TEXT, addition TEXT);";
+//            string createTableQuery = "CREATE TABLE consultations (id INTEGER PRIMARY KEY AUTOINCREMENT,"
+  //                      + "name TEXT, subject TEXT, groop TEXT, date TEXT, time TEXT, place TEXT, addition TEXT);";
+            string createTableQuery = "CREATE TABLE consultations ("
+                      + "name TEXT, subject TEXT, groop TEXT, date TEXT, time TEXT, place TEXT, addition TEXT);";
 
             SQLiteCommand command = new SQLiteCommand(createTableQuery, connection);
 

@@ -144,29 +144,64 @@ namespace WordReader
         /// <param name="e"></param>
         private void compareTablesButton_Click(object sender, EventArgs e)
         {
-            if (firstDBViewer.RowCount == secondDBViewer.RowCount)
-            {
+            string firstTableData = "";
+            string secondTableData = "";
+            List<string> firstTableCollection = new List<string>();
+            //if (firstDBViewer.RowCount == secondDBViewer.RowCount)
+            //{        
                 for (int i = 0; i < firstDBViewer.RowCount; i++)
                 {
-                    for (int j = 0; j < secondDBViewer.ColumnCount; j++)
+                    for (int j = 0; j < firstDBViewer.ColumnCount; j++)
                     {
-                        string first = firstDBViewer.Rows[i].Cells[j].Value.ToString();
-                        string second = secondDBViewer.Rows[i].Cells[j].Value.ToString();
-                        if (first == second) 
+                        firstTableData += firstDBViewer.Rows[i].Cells[j].Value.ToString() + " ";
+                      
+                        while(true)
                         {
-                            firstDBViewer.Rows[i].Cells[j].Style.BackColor = Color.Green;
-                            secondDBViewer.Rows[i].Cells[j].Style.BackColor = Color.Green;
-                        }
-                        else
-                        {
-                            for (int k = 0; k < secondDBViewer.ColumnCount; k++)
+                            for (int k = 0; k < secondDBViewer.RowCount; k++)
                             {
-                                secondDBViewer.Rows[i].Cells[k].Style.BackColor = Color.Wheat;
-                                firstDBViewer.Rows[i].Cells[k].Style.BackColor = Color.Red;
+                                for (int l = 0; l < secondDBViewer.ColumnCount; l++)
+                                { 
+                                    secondTableData += secondDBViewer.Rows[k].Cells[l].Value.ToString() + " ";
+                                }
+
+                                if (firstTableData == secondTableData)
+                                {
+                                    for (int a = 0; a < firstDBViewer.ColumnCount; a++ )
+                                        firstDBViewer.Rows[i].Cells[a].Style.BackColor = Color.Green;
+                                  
+                                    for (int c = 0; c < secondDBViewer.ColumnCount; c++ )
+                                        secondDBViewer.Rows[k].Cells[c].Style.BackColor = Color.Green;
+
+                                    secondTableData = "";
+                                }
+                                else
+                                {
+                                        //firstDBViewer.Rows[i].Cells[j].Style.BackColor = Color.Red;
+
+                                    secondTableData = "";
+                                    continue;
+                                }
                             }
+                            break;
                         }
+                        //secondTableData += secondDBViewer.Rows[i].Cells[j].Value.ToString();
+                     
+                        //if (first == second) 
+                        //{
+                        //    firstDBViewer.Rows[i].Cells[j].Style.BackColor = Color.Green;
+                        //    secondDBViewer.Rows[i].Cells[j].Style.BackColor = Color.Green;
+                        //}
+                        //else
+                        //{
+                        //    for (int l = 0; l < secondDBViewer.ColumnCount; l++)
+                        //    {
+                        //        secondDBViewer.Rows[i].Cells[k].Style.BackColor = Color.Wheat;
+                        //        firstDBViewer.Rows[i].Cells[k].Style.BackColor = Color.Red;
+                        //    }
+                        //}
                     }
-                }
+                    firstTableCollection.Add(firstTableData);
+                    firstTableData = "";             
             }
         }
 
