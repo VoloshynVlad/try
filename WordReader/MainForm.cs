@@ -9,12 +9,12 @@ namespace WordReader
     public partial class MainForm : Form
     {
         /// <summary>
-        /// 
+        /// Контроллер всей формы.
         /// </summary>
         MainController mainController;
 
         /// <summary>
-        /// Конструктор формы
+        /// Конструктор формы.
         /// </summary>
         public MainForm()
         {
@@ -25,8 +25,7 @@ namespace WordReader
         #region Обработчики событий.
 
         /// <summary>
-        /// Обработка события нажатия кнопки
-        /// которая выбирает текстовый документ 
+        /// Обработка события нажатия кнопки, которая выбирает текстовый документ 
         /// формата .doc или .docx, который необходимо распарсить.
         /// </summary>
         /// <param name="sender"></param>
@@ -47,6 +46,7 @@ namespace WordReader
         /// <param name="e"></param>
         private void parseDocButton_Click(object sender, EventArgs e)
         {
+            // TODO: вынести в отдельный метод
 
             this.mainController.ClearConsultationArray();
 
@@ -55,7 +55,6 @@ namespace WordReader
             groupsComboBox.Items.Clear();
 
             ParseDocument();
-
 
             if (firstDBViewer.RowCount == 0)
             {
@@ -97,9 +96,8 @@ namespace WordReader
         }
 
         /// <summary>
-        /// Обработчик события нажатия кнопки
-        /// для выбора первой базы данных
-        /// с которой будет сравниваться вторая база данных
+        /// Обработчик события нажатия кнопки для выбора первой базы данных,
+        /// с которой будет сравниваться вторая база данных.
         /// Заполнение элемента FirstDBViewer данными из базы.
         /// </summary>
         /// <param name="sender"></param>
@@ -108,13 +106,11 @@ namespace WordReader
         {
             string path = SelectDB();
             this.mainController.PathDB = path;
-            firstDBViewer.DataSource = mainController.FillDB(path);
+            firstDBViewer.DataSource = this.mainController.FillDB(path);
         }
 
         /// <summary>
-        /// Обработчик события нажатия кнопки
-        /// для выбора второй базы данных
-        /// которую необходимо сравнить
+        /// Нажатие кнопки для выбора второй базы данных для сранения.
         /// Заполнение элемента SecondDBViewer данными из базы.
         /// </summary>
         /// <param name="sender"></param>
@@ -123,7 +119,7 @@ namespace WordReader
         {
             string path = SelectDB();
             this.mainController.PathForComparedDB = path;
-            secondDBViewer.DataSource = mainController.FillDB(path);
+            secondDBViewer.DataSource = this.mainController.FillDB(path);
         }
 
         /// <summary>
@@ -136,14 +132,14 @@ namespace WordReader
         { }
 
         /// <summary>
-        /// Обработка события нажатия кнопки
-        /// которая сравнивает две выборки из таблиц
-        /// и отображает разницу в них
+        /// Нажатие кнопки сравнения содержимого таблиц и отображения различий.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void compareTablesButton_Click(object sender, EventArgs e)
         {
+            // TODO: вынести в отдельный метод
+			
             string firstTableData = "";
             string secondTableData = "";
             List<string> firstTableCollection = new List<string>();
@@ -154,7 +150,9 @@ namespace WordReader
                     for (int j = 0; j < firstDBViewer.ColumnCount; j++)
                     {
                         firstTableData += firstDBViewer.Rows[i].Cells[j].Value.ToString() + " ";
-                      
+						
+						// ИГС: в чем смысл внешнего цикла, который прерывается сразу после внутреннего цикла? Внутренние скипы его все равно не тронут.
+						// и стоит добавить обычных комментариев в происходящее здесь. Мол, при совпадении занчений - такой-то результат, при различии - такой-то.
                         while(true)
                         {
                             for (int k = 0; k < secondDBViewer.RowCount; k++)
@@ -176,7 +174,7 @@ namespace WordReader
                                 }
                                 else
                                 {
-                                        //firstDBViewer.Rows[i].Cells[j].Style.BackColor = Color.Red;
+                                    //firstDBViewer.Rows[i].Cells[j].Style.BackColor = Color.Red;
 
                                     secondTableData = "";
                                     continue;
@@ -216,12 +214,16 @@ namespace WordReader
 
         #endregion
 
+        #region Логика.
+
         /// <summary>
         /// Выбор базы данных и загрузка в datGridView.
         /// </summary>
         private string SelectDB()
         {
             //TODO dialogresult
+            //TODO комментарий не соответствует текущему состоянию метода.
+			
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.InitialDirectory = this.mainController.ApplicationPath;
             ofd.ShowDialog();
@@ -234,6 +236,8 @@ namespace WordReader
         /// </summary>
         private string SelectPathToSaveDB()
         {
+            //TODO комментарий не соответствует текущему состоянию метода.
+			
             SaveFileDialog sfd = new SaveFileDialog();
             sfd.Filter = "Файлы SQLite (*.db) | *.db";
             sfd.FileName = DateTime.Now.ToString().Replace(':', '-') + ".db";
@@ -309,6 +313,10 @@ namespace WordReader
             {
                 MessageBox.Show(this.mainController.ParseDocument());
             }
+			
+            //TODO mainController.ParseDocument() в случае неудачи вызовется дважды. Это явный косяк, учитывая длительность парсинга.
         }
+
+        #endregion
     }
 }
