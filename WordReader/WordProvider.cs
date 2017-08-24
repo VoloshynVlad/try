@@ -6,7 +6,7 @@ namespace WordReader
 {
     class WordProvider
     {
-		//TODO: комменты!
+        //TODO: комменты!
 
         public List<Word.Range> TablesRanges { get; set; }
 
@@ -47,7 +47,7 @@ namespace WordReader
                 for (int par = 1; par <= doc.Paragraphs.Count; par++)
                 {
                     Word.Range r = doc.Paragraphs[par].Range;
-                    
+
                     foreach (Word.Range range in TablesRanges)
                     {
                         if (r.Start >= range.Start && r.Start <= range.End)
@@ -111,7 +111,7 @@ namespace WordReader
 
                 return "OK";
             }
-            catch ( System.Runtime.InteropServices.COMException ex)
+            catch (System.Runtime.InteropServices.COMException ex)
             {
                 return ex.Message;
             }
@@ -126,7 +126,7 @@ namespace WordReader
                 if (doc != null)
                     System.Runtime.InteropServices.Marshal.ReleaseComObject(doc);
                 if (wordApp != null)
-                    System.Runtime.InteropServices.Marshal.ReleaseComObject(wordApp);      
+                    System.Runtime.InteropServices.Marshal.ReleaseComObject(wordApp);
 
                 doc = null;
                 word = null;

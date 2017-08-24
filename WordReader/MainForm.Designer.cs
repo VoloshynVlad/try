@@ -298,4 +298,3 @@
         private System.Windows.Forms.ToolStripStatusLabel parsingStatusStrip;
     }
 }
-
