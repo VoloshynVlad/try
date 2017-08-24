@@ -47,52 +47,24 @@ namespace WordReader
         private void parseDocButton_Click(object sender, EventArgs e)
         {
             // TODO: вынести в отдельный метод
-            int exitCode = 0;
 
-            parsingStatusStrip.Text = "Parsing started...";
-            
             this.mainController.ClearConsultationArray();
 
             lecturersComboBox.Items.Clear();
             subjectsComboBox.Items.Clear();
             groupsComboBox.Items.Clear();
 
-            try
-            {
-                ParseDocument();
+            ParseDocument();
 
-                //if (firstDBViewer.RowCount == 0)
-                //{
-                    BindingSource bind = new BindingSource { DataSource = this.mainController.Consultations };
-                    firstDBViewer.DataSource = bind;
-                //}
-                //else
-                //{
-                //    BindingSource bind = new BindingSource { DataSource = this.mainController.Consultations };
-                //    secondDBViewer.DataSource = bind;
-                //}
+            if (firstDBViewer.RowCount == 0)
+            {
+                BindingSource bind = new BindingSource { DataSource = this.mainController.Consultations };
+                firstDBViewer.DataSource = bind;
             }
-            catch
+            else
             {
-                System.Runtime.InteropServices.COMException exp;
-                {
-                    MessageBox.Show("You must choose file first!");
-                    exitCode = -1;
-                };
-            }
-
-            finally
-            {
-                switch (exitCode)
-                {
-                    case 0:
-                        parsingStatusStrip.Text = "Done!";
-                        break;
-
-                    case -1:
-                        parsingStatusStrip.Text = "Error!";
-                        break;
-                }
+                BindingSource bind = new BindingSource { DataSource = this.mainController.Consultations };
+                secondDBViewer.DataSource = bind;
             }
         }
 
@@ -114,19 +86,12 @@ namespace WordReader
                 label5.Text = path;
                 this.mainController.PathDB = path;
 
-                if (firstDBViewer.RowCount == 0)
-                {
-                    MessageBox.Show("Nothing to save to DB");
-                }
-                else
-                {
-                    if (!this.mainController.SaveToDB(path))
-                        MessageBox.Show("DB with such name already exists");
-                }
+                if (!this.mainController.SaveToDB(path))
+                    MessageBox.Show("База данных c таким названием уже существует");
             }
             catch (ArgumentException exp)
-            {   
-              MessageBox.Show("DB must have name.");
+            {
+                MessageBox.Show("Пустое имя пути не допускается.");
             }
         }
 
@@ -141,11 +106,7 @@ namespace WordReader
         {
             string path = SelectDB();
             this.mainController.PathDB = path;
-
-            if (path != "")
-                firstDBViewer.DataSource = this.mainController.FillDB(path);
-            else
-                ;
+            firstDBViewer.DataSource = this.mainController.FillDB(path);
         }
 
         /// <summary>
@@ -158,12 +119,17 @@ namespace WordReader
         {
             string path = SelectDB();
             this.mainController.PathForComparedDB = path;
-            
-            if (path != "")
-                secondDBViewer.DataSource = this.mainController.FillDB(path);
-            else
-                ;
+            secondDBViewer.DataSource = this.mainController.FillDB(path);
         }
+
+        /// <summary>
+        /// Обработка события нажатия кнопки
+        /// для создания запроса ко второй базе данных
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>     
+        private void makeQueryToSecondDBButton_Click(object sender, EventArgs e)
+        { }
 
         /// <summary>
         /// Нажатие кнопки сравнения содержимого таблиц и отображения различий.
@@ -173,120 +139,106 @@ namespace WordReader
         private void compareTablesButton_Click(object sender, EventArgs e)
         {
             // TODO: вынести в отдельный метод
-
+			
             string firstTableData = "";
             string secondTableData = "";
             List<string> firstTableCollection = new List<string>();
             //if (firstDBViewer.RowCount == secondDBViewer.RowCount)
             //{        
-            for (int i = 0; i < firstDBViewer.RowCount; i++)
-            {
-                for (int j = 0; j < firstDBViewer.ColumnCount; j++)
+                for (int i = 0; i < firstDBViewer.RowCount; i++)
                 {
-                    firstTableData += firstDBViewer.Rows[i].Cells[j].Value.ToString() + " ";
-
-                    // ИГС: в чем смысл внешнего цикла, который прерывается сразу после внутреннего цикла? Внутренние скипы его все равно не тронут.
-                    // и стоит добавить обычных комментариев в происходящее здесь. Мол, при совпадении занчений - такой-то результат, при различии - такой-то.
-                    //while (true)
-                    //{
-                        for (int k = 0; k < secondDBViewer.RowCount; k++)
+                    for (int j = 0; j < firstDBViewer.ColumnCount; j++)
+                    {
+                        firstTableData += firstDBViewer.Rows[i].Cells[j].Value.ToString() + " ";
+						
+						// ИГС: в чем смысл внешнего цикла, который прерывается сразу после внутреннего цикла? Внутренние скипы его все равно не тронут.
+						// и стоит добавить обычных комментариев в происходящее здесь. Мол, при совпадении занчений - такой-то результат, при различии - такой-то.
+                        while(true)
                         {
-                            for (int l = 0; l < secondDBViewer.ColumnCount; l++)
+                            for (int k = 0; k < secondDBViewer.RowCount; k++)
                             {
-                                secondTableData += secondDBViewer.Rows[k].Cells[l].Value.ToString() + " ";
+                                for (int l = 0; l < secondDBViewer.ColumnCount; l++)
+                                { 
+                                    secondTableData += secondDBViewer.Rows[k].Cells[l].Value.ToString() + " ";
+                                }
+
+                                if (firstTableData == secondTableData)
+                                {
+                                    for (int a = 0; a < firstDBViewer.ColumnCount; a++ )
+                                        firstDBViewer.Rows[i].Cells[a].Style.BackColor = Color.Green;
+                                  
+                                    for (int c = 0; c < secondDBViewer.ColumnCount; c++ )
+                                        secondDBViewer.Rows[k].Cells[c].Style.BackColor = Color.Green;
+
+                                    secondTableData = "";
+                                }
+                                else
+                                {
+                                    //firstDBViewer.Rows[i].Cells[j].Style.BackColor = Color.Red;
+
+                                    secondTableData = "";
+                                    continue;
+                                }
                             }
-
-                            if (firstTableData == secondTableData)
-                            {
-                                for (int a = 0; a < firstDBViewer.ColumnCount; a++)
-                                    firstDBViewer.Rows[i].Cells[a].Style.BackColor = Color.Green;
-
-                                for (int c = 0; c < secondDBViewer.ColumnCount; c++)
-                                    secondDBViewer.Rows[k].Cells[c].Style.BackColor = Color.Green;
-
-                                secondTableData = "";
-                            }
-                            else
-                            {
-                                //firstDBViewer.Rows[i].Cells[j].Style.BackColor = Color.Red;
-
-                                secondTableData = "";
-                                continue;
-                            }
+                            break;
                         }
-                       // break;
-                   // }
-                    //secondTableData += secondDBViewer.Rows[i].Cells[j].Value.ToString();
-
-                    //if (first == second) 
-                    //{
-                    //    firstDBViewer.Rows[i].Cells[j].Style.BackColor = Color.Green;
-                    //    secondDBViewer.Rows[i].Cells[j].Style.BackColor = Color.Green;
-                    //}
-                    //else
-                    //{
-                    //    for (int l = 0; l < secondDBViewer.ColumnCount; l++)
-                    //    {
-                    //        secondDBViewer.Rows[i].Cells[k].Style.BackColor = Color.Wheat;
-                    //        firstDBViewer.Rows[i].Cells[k].Style.BackColor = Color.Red;
-                    //    }
-                    //}
-                }
-                firstTableCollection.Add(firstTableData);
-                firstTableData = "";
+                        //secondTableData += secondDBViewer.Rows[i].Cells[j].Value.ToString();
+                     
+                        //if (first == second) 
+                        //{
+                        //    firstDBViewer.Rows[i].Cells[j].Style.BackColor = Color.Green;
+                        //    secondDBViewer.Rows[i].Cells[j].Style.BackColor = Color.Green;
+                        //}
+                        //else
+                        //{
+                        //    for (int l = 0; l < secondDBViewer.ColumnCount; l++)
+                        //    {
+                        //        secondDBViewer.Rows[i].Cells[k].Style.BackColor = Color.Wheat;
+                        //        firstDBViewer.Rows[i].Cells[k].Style.BackColor = Color.Red;
+                        //    }
+                        //}
+                    }
+                    firstTableCollection.Add(firstTableData);
+                    firstTableData = "";             
             }
         }
 
         /// <summary>
-        /// Синхронная прокрутка данных в dataGridView'ах.
+        /// Обработка события нажатия кнопки
+        /// для создания запроса к первой базе данных
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void firstDBViewer_Scroll(object sender, ScrollEventArgs e)
-        {
-            try
-            {
-                secondDBViewer.FirstDisplayedScrollingRowIndex = firstDBViewer.FirstDisplayedScrollingRowIndex;
-            }
-            catch (ArgumentOutOfRangeException)
-            {
-            }
-        }
+        private void makeQueryToFirstDBButton_Click(object sender, EventArgs e)
+        { }
 
         #endregion
 
         #region Логика.
 
         /// <summary>
-        /// Выбор базы данных.
+        /// Выбор базы данных и загрузка в datGridView.
         /// </summary>
         private string SelectDB()
         {
             //TODO dialogresult
-
+            //TODO комментарий не соответствует текущему состоянию метода.
+			
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.InitialDirectory = this.mainController.ApplicationPath;
-            ofd.Filter = "Файлы SQLite (*.db) | *.db";
+            ofd.ShowDialog();
 
-            DialogResult dr = ofd.ShowDialog();
-
-            if (dr == DialogResult.OK)
-            {
-                return ofd.FileName;
-            }
-            else
-            {
-                return ofd.FileName;
-            }
+            return ofd.FileName;
         }
 
         /// <summary>
-        /// Запись данных в базу данных.
+        /// Создание и запись данных в базу данных.
         /// </summary>
         private string SelectPathToSaveDB()
         {
+            //TODO комментарий не соответствует текущему состоянию метода.
+			
             SaveFileDialog sfd = new SaveFileDialog();
-            sfd.InitialDirectory = this.mainController.ApplicationPath;
             sfd.Filter = "Файлы SQLite (*.db) | *.db";
             sfd.FileName = DateTime.Now.ToString().Replace(':', '-') + ".db";
             DialogResult dr = sfd.ShowDialog();
@@ -319,13 +271,9 @@ namespace WordReader
                 label2.Text = path;
                 this.mainController.SelectedDocument = path;
             }
-            else  if (dr == DialogResult.Cancel || dr == DialogResult.Abort)
-            {
-                ;
-            }
             else
             {
-                MessageBox.Show("Something went wrong :c");
+                string path = null;
             }
         }
 
@@ -333,7 +281,8 @@ namespace WordReader
         /// Парсинг документа Word.
         /// </summary>
         private void ParseDocument()
-        {          
+        {
+            parsingStatusStrip.Text = "Parsing started...";
             //нужно сделать проверку выполнения правильности работы функции ParseDocument
             if (this.mainController.ParseDocument() == "OK")
             {
@@ -359,12 +308,15 @@ namespace WordReader
                 subjectsComboBox.SelectedIndex = 0;
 
                 parsingStatusStrip.Text = "Done!";
-            }         
+            }
+            else
+            {
+                MessageBox.Show(this.mainController.ParseDocument());
+            }
+			
+            //TODO mainController.ParseDocument() в случае неудачи вызовется дважды. Это явный косяк, учитывая длительность парсинга.
         }
 
         #endregion
-
-        
-
     }
 }
