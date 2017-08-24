@@ -44,8 +44,6 @@
             this.secondDBViewer = new System.Windows.Forms.DataGridView();
             this.label6 = new System.Windows.Forms.Label();
             this.selectSecondDBButton = new System.Windows.Forms.Button();
-            this.makeQueryToFirstDBButton = new System.Windows.Forms.Button();
-            this.makeQueryToSecondDBButton = new System.Windows.Forms.Button();
             this.compareTablesButton = new System.Windows.Forms.Button();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.parsingStatusBar = new System.Windows.Forms.ToolStripProgressBar();
@@ -99,9 +97,9 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(15, 119);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(130, 13);
+            this.label1.Size = new System.Drawing.Size(78, 13);
             this.label1.TabIndex = 5;
-            this.label1.Text = "Список преподавателей";
+            this.label1.Text = "List of lecturers";
             // 
             // selectDocButton
             // 
@@ -126,9 +124,9 @@
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(15, 173);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(75, 13);
+            this.label3.Size = new System.Drawing.Size(70, 13);
             this.label3.TabIndex = 8;
-            this.label3.Text = "Список групп";
+            this.label3.Text = "List of groups";
             // 
             // groupsComboBox
             // 
@@ -153,9 +151,9 @@
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(12, 225);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(102, 13);
+            this.label4.Size = new System.Drawing.Size(77, 13);
             this.label4.TabIndex = 11;
-            this.label4.Text = "Список предметов";
+            this.label4.Text = "List of subjects";
             // 
             // firstDBViewer
             // 
@@ -165,8 +163,10 @@
             this.firstDBViewer.Location = new System.Drawing.Point(239, 142);
             this.firstDBViewer.Name = "firstDBViewer";
             this.firstDBViewer.ReadOnly = true;
+            this.firstDBViewer.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.firstDBViewer.Size = new System.Drawing.Size(1001, 214);
             this.firstDBViewer.TabIndex = 12;
+            this.firstDBViewer.Scroll += new System.Windows.Forms.ScrollEventHandler(this.firstDBViewer_Scroll);
             // 
             // label5
             // 
@@ -185,6 +185,7 @@
             this.secondDBViewer.Location = new System.Drawing.Point(236, 431);
             this.secondDBViewer.Name = "secondDBViewer";
             this.secondDBViewer.ReadOnly = true;
+            this.secondDBViewer.ScrollBars = System.Windows.Forms.ScrollBars.None;
             this.secondDBViewer.Size = new System.Drawing.Size(1004, 214);
             this.secondDBViewer.TabIndex = 12;
             // 
@@ -206,26 +207,6 @@
             this.selectSecondDBButton.Text = "Select DB";
             this.selectSecondDBButton.UseVisualStyleBackColor = true;
             this.selectSecondDBButton.Click += new System.EventHandler(this.selectSecondDBButton_Click);
-            // 
-            // makeQueryToFirstDBButton
-            // 
-            this.makeQueryToFirstDBButton.Location = new System.Drawing.Point(318, 88);
-            this.makeQueryToFirstDBButton.Name = "makeQueryToFirstDBButton";
-            this.makeQueryToFirstDBButton.Size = new System.Drawing.Size(75, 23);
-            this.makeQueryToFirstDBButton.TabIndex = 14;
-            this.makeQueryToFirstDBButton.Text = "Make Query";
-            this.makeQueryToFirstDBButton.UseVisualStyleBackColor = true;
-            this.makeQueryToFirstDBButton.Click += new System.EventHandler(this.makeQueryToFirstDBButton_Click);
-            // 
-            // makeQueryToSecondDBButton
-            // 
-            this.makeQueryToSecondDBButton.Location = new System.Drawing.Point(318, 380);
-            this.makeQueryToSecondDBButton.Name = "makeQueryToSecondDBButton";
-            this.makeQueryToSecondDBButton.Size = new System.Drawing.Size(75, 23);
-            this.makeQueryToSecondDBButton.TabIndex = 14;
-            this.makeQueryToSecondDBButton.Text = "Make Query";
-            this.makeQueryToSecondDBButton.UseVisualStyleBackColor = true;
-            this.makeQueryToSecondDBButton.Click += new System.EventHandler(this.makeQueryToSecondDBButton_Click);
             // 
             // compareTablesButton
             // 
@@ -265,8 +246,6 @@
             this.ClientSize = new System.Drawing.Size(1249, 663);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.compareTablesButton);
-            this.Controls.Add(this.makeQueryToSecondDBButton);
-            this.Controls.Add(this.makeQueryToFirstDBButton);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.secondDBViewer);
@@ -284,7 +263,7 @@
             this.Controls.Add(this.saveToDBButton);
             this.Controls.Add(this.parseDocButton);
             this.Name = "MainForm";
-            this.Text = "Работа с консультациями";
+            this.Text = "Consultations";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             ((System.ComponentModel.ISupportInitialize)(this.firstDBViewer)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.secondDBViewer)).EndInit();
@@ -313,8 +292,6 @@
         private System.Windows.Forms.DataGridView secondDBViewer;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Button selectSecondDBButton;
-        private System.Windows.Forms.Button makeQueryToFirstDBButton;
-        private System.Windows.Forms.Button makeQueryToSecondDBButton;
         private System.Windows.Forms.Button compareTablesButton;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripProgressBar parsingStatusBar;

@@ -6,6 +6,7 @@ namespace WordReader
 {
     class WordProvider
     {
+		//TODO: комменты!
 
         public List<Word.Range> TablesRanges { get; set; }
 
@@ -107,7 +108,6 @@ namespace WordReader
                     }
                 }
                 consultations.RemoveAt(0);
-
 
                 return "OK";
             }
