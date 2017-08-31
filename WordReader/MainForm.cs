@@ -149,6 +149,32 @@ namespace WordReader
         }
 
         /// <summary>
+        /// Обработчик события выбора пользователя режима "Сравнения"
+        /// или "Просмотр"
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void comparationCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (comparationCheckBox.Checked)
+            {
+                selectSecondDBButton.Visible = true;
+                compareTablesButton.Visible = true;
+                secondDBViewer.Visible = true;
+                label6.Visible = true;
+                this.Size = new System.Drawing.Size(1146, 666);
+            }
+            else
+            {
+                selectSecondDBButton.Visible = false;
+                compareTablesButton.Visible = false;
+                secondDBViewer.Visible = false;
+                label6.Visible = false;
+                this.Size = new System.Drawing.Size(1146, 424);
+            }
+        }
+
+        /// <summary>
         /// Нажатие кнопки для выбора второй базы данных для сранения.
         /// Заполнение элемента SecondDBViewer данными из базы.
         /// </summary>
@@ -306,17 +332,17 @@ namespace WordReader
         /// </summary>
         private void SelectDocument()
         {
-            label2.Text = "";
             this.mainController.SelectedDocument = "";
             OpenFileDialog ofd = new OpenFileDialog();
-            ofd.InitialDirectory = this.mainController.ApplicationPath;
+            ofd.InitialDirectory = Environment.SpecialFolder.Desktop.ToString();//this.mainController.ApplicationPath;
             ofd.Filter = "Файлы Word (*.doc; *.docx) | *.doc; *.docx";
             DialogResult dr = ofd.ShowDialog();
 
             if (dr == DialogResult.OK)
             {
+                pathLabel.Text = "";
                 string path = ofd.FileName;
-                label2.Text = path;
+                pathLabel.Text = path;
                 this.mainController.SelectedDocument = path;
             }
             else if (dr == DialogResult.Cancel || dr == DialogResult.Abort)
@@ -361,7 +387,6 @@ namespace WordReader
                 parsingStatusStrip.Text = "Done!";
             }
         }
-
-        #endregion
+        #endregion 
     }
 }

@@ -16,7 +16,7 @@ namespace WordReader
     {
 		#region Properties.
 		//TODO: публичным свойствам хмл-комменты точно нужны.
-		
+
         public string SelectedDocument { get; set; }
         public string PathDB { get; set; }
         public string PathForComparedDB { get; set; }

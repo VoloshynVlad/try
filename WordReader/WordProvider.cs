@@ -6,15 +6,30 @@ namespace WordReader
 {
     class WordProvider
     {
-        //TODO: комменты!
 
+        /// <summary>
+        /// Лист который хранит расположения начала и конца
+        /// строк в таблице.
+        /// </summary>
         public List<Word.Range> TablesRanges { get; set; }
 
+        /// <summary>
+        /// Конструктор.
+        /// </summary>
         public WordProvider()
         {
 
         }
 
+        /// <summary>
+        /// Функция чтения документа.
+        /// </summary>
+        /// <param name="selectedDocument">Путь к документу для парсинга.</param>
+        /// <param name="lecturers">Лист считанных лекторов.</param>
+        /// <param name="subjects">Лист считанных предметов.</param>
+        /// <param name="groups">Лист считанных групп.</param>
+        /// <param name="consultations">Лист со всеми считанным консультациями.</param>
+        /// <returns></returns>
         public string ReadDoc(string selectedDocument, List<string> lecturers, List<string> subjects,
                              List<string> groups, List<Consultation> consultations)
         {
@@ -57,41 +72,58 @@ namespace WordReader
                             if (cellCounter == 2 && r.Text.ToString() != "\r\a")
                             {
                                 name = r.Text.ToString().Trim(new Char[] { '\r', '\a' });
+                                
                                 if (!lecturers.Contains(name))
                                     lecturers.Add(name);
                             }
 
                             if (cellCounter == 3 && r.Text.ToString() != "\r\a")
                             {
-                                subject = r.Text.ToString().Trim(new Char[] { '\r', '\a' });
+                                    subject = r.Text.ToString().Trim(new Char[] { '\r', '\a' });
+                                
                                 if (!subjects.Contains(subject))
                                     subjects.Add(subject);
                             }
 
                             if (cellCounter == 4 && r.Text.ToString() != "\r\a")
-                            {
-                                group = r.Text.ToString().Trim(new Char[] { '\r', '\a' });
+                            {                                
+                                    group = r.Text.ToString().Trim(new Char[] { '\r', '\a' });
+    
                                 if (!groups.Contains(group))
                                     groups.Add(group);
                             }
 
-                            if (cellCounter == 5 && r.Text.ToString() != "\r\a")
+                            if (cellCounter == 5)
                             {
-                                date = r.Text.ToString().Trim(new Char[] { '\r', '\a' });
+                                date = "";
+                                if (r.Text.ToString() == "\r\a")
+                                    date = "-";
+                                else
+                                    date = r.Text.ToString().Trim(new Char[] { '\r', '\a' });
                             }
 
-                            if (cellCounter == 6 && r.Text.ToString() != "\r\a")
+                            if (cellCounter == 6)
                             {
-                                time = r.Text.ToString().Trim(new Char[] { '\r', '\a' });
+                                time = "";
+
+                                if (r.Text.ToString() == "\r\a")
+                                    time = "-";
+                                else 
+                                    time = r.Text.ToString().Trim(new Char[] { '\r', '\a' });
                             }
 
-                            if (cellCounter == 7 && r.Text.ToString() != "\r\a")
+                            if (cellCounter == 7)
                             {
-                                place = r.Text.ToString().Trim(new Char[] { '\r', '\a' });
+                                place = "";
+                                if (r.Text.ToString() == "\r\a")
+                                    place = "-";
+                                else    
+                                    place = r.Text.ToString().Trim(new Char[] { '\r', '\a' });
                             }
 
                             if (cellCounter == 8)
                             {
+                                addition = "";
                                 if (r.Text.ToString() == "\r\a")
                                     addition = "-";
                                 else
