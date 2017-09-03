@@ -58,7 +58,7 @@
             // 
             // parseDocButton
             // 
-            this.parseDocButton.Location = new System.Drawing.Point(15, 42);
+            this.parseDocButton.Location = new System.Drawing.Point(15, 41);
             this.parseDocButton.Name = "parseDocButton";
             this.parseDocButton.Size = new System.Drawing.Size(75, 23);
             this.parseDocButton.TabIndex = 0;
@@ -68,11 +68,11 @@
             // 
             // saveToDBButton
             // 
-            this.saveToDBButton.Location = new System.Drawing.Point(15, 71);
+            this.saveToDBButton.Location = new System.Drawing.Point(15, 70);
             this.saveToDBButton.Name = "saveToDBButton";
-            this.saveToDBButton.Size = new System.Drawing.Size(75, 23);
+            this.saveToDBButton.Size = new System.Drawing.Size(75, 35);
             this.saveToDBButton.TabIndex = 2;
-            this.saveToDBButton.Text = "Save to  DB";
+            this.saveToDBButton.Text = "Save parsed to  DB";
             this.saveToDBButton.UseVisualStyleBackColor = true;
             this.saveToDBButton.Click += new System.EventHandler(this.saveToDBButton_Click);
             // 
@@ -106,7 +106,7 @@
             // 
             // selectDocButton
             // 
-            this.selectDocButton.Location = new System.Drawing.Point(15, 13);
+            this.selectDocButton.Location = new System.Drawing.Point(15, 12);
             this.selectDocButton.Name = "selectDocButton";
             this.selectDocButton.Size = new System.Drawing.Size(75, 23);
             this.selectDocButton.TabIndex = 6;
@@ -117,7 +117,7 @@
             // pathLabel
             // 
             this.pathLabel.AutoSize = true;
-            this.pathLabel.Location = new System.Drawing.Point(96, 20);
+            this.pathLabel.Location = new System.Drawing.Point(96, 19);
             this.pathLabel.Name = "pathLabel";
             this.pathLabel.Size = new System.Drawing.Size(0, 13);
             this.pathLabel.TabIndex = 7;
@@ -163,7 +163,7 @@
             this.firstDBViewer.AllowUserToAddRows = false;
             this.firstDBViewer.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
             this.firstDBViewer.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.firstDBViewer.Location = new System.Drawing.Point(96, 122);
+            this.firstDBViewer.Location = new System.Drawing.Point(96, 123);
             this.firstDBViewer.Name = "firstDBViewer";
             this.firstDBViewer.ReadOnly = true;
             this.firstDBViewer.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
@@ -295,6 +295,7 @@
             this.MaximizeBox = false;
             this.Name = "MainForm";
             this.Text = "Consultations";
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyDown);
             ((System.ComponentModel.ISupportInitialize)(this.firstDBViewer)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.secondDBViewer)).EndInit();
             this.statusStrip1.ResumeLayout(false);

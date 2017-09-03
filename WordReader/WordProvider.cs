@@ -4,9 +4,11 @@ using Word = Microsoft.Office.Interop.Word;
 
 namespace WordReader
 {
+    /// <summary>
+    /// 
+    /// </summary>
     class WordProvider
     {
-
         /// <summary>
         /// Лист который хранит расположения начала и конца
         /// строк в таблице.
@@ -55,7 +57,7 @@ namespace WordReader
                     TablesRanges.Add(TRange);
                 }
 
-                int cellCounter = 0;
+                int colNumber = 0;
                 string name = "", subject = "", group = "", date = "", time = "", place = "", addition = "";
 
                 int p = doc.Paragraphs.Count;
@@ -67,33 +69,33 @@ namespace WordReader
                     {
                         if (r.Start >= range.Start && r.Start <= range.End)
                         {
-                            cellCounter++;
+                            colNumber++;
 
-                            if (cellCounter == 2 && r.Text.ToString() != "\r\a")
+                            if (colNumber == 2 && r.Text.ToString() != "\r\a")
                             {
                                 name = r.Text.ToString().Trim(new Char[] { '\r', '\a' });
-                                
+
                                 if (!lecturers.Contains(name))
                                     lecturers.Add(name);
                             }
 
-                            if (cellCounter == 3 && r.Text.ToString() != "\r\a")
+                            if (colNumber == 3 && r.Text.ToString() != "\r\a")
                             {
-                                    subject = r.Text.ToString().Trim(new Char[] { '\r', '\a' });
-                                
+                                subject = r.Text.ToString().Trim(new Char[] { '\r', '\a' });
+
                                 if (!subjects.Contains(subject))
                                     subjects.Add(subject);
                             }
 
-                            if (cellCounter == 4 && r.Text.ToString() != "\r\a")
-                            {                                
-                                    group = r.Text.ToString().Trim(new Char[] { '\r', '\a' });
-    
+                            if (colNumber == 4 && r.Text.ToString() != "\r\a")
+                            {
+                                group = r.Text.ToString().Trim(new Char[] { '\r', '\a' });
+
                                 if (!groups.Contains(group))
                                     groups.Add(group);
                             }
 
-                            if (cellCounter == 5)
+                            if (colNumber == 5)
                             {
                                 date = "";
                                 if (r.Text.ToString() == "\r\a")
@@ -102,26 +104,26 @@ namespace WordReader
                                     date = r.Text.ToString().Trim(new Char[] { '\r', '\a' });
                             }
 
-                            if (cellCounter == 6)
+                            if (colNumber == 6)
                             {
                                 time = "";
 
                                 if (r.Text.ToString() == "\r\a")
                                     time = "-";
-                                else 
+                                else
                                     time = r.Text.ToString().Trim(new Char[] { '\r', '\a' });
                             }
 
-                            if (cellCounter == 7)
+                            if (colNumber == 7)
                             {
                                 place = "";
                                 if (r.Text.ToString() == "\r\a")
                                     place = "-";
-                                else    
+                                else
                                     place = r.Text.ToString().Trim(new Char[] { '\r', '\a' });
                             }
 
-                            if (cellCounter == 8)
+                            if (colNumber == 8)
                             {
                                 addition = "";
                                 if (r.Text.ToString() == "\r\a")
@@ -129,16 +131,18 @@ namespace WordReader
                                 else
                                     addition = r.Text.ToString().Trim(new Char[] { '\r', '\a' });
                             }
-                            if (cellCounter == 9)
+                            if (colNumber == 9)
                             {
                                 Consultation cons = new Consultation(name, subject, group, date,
                                                                      time, place, addition);
                                 consultations.Add(cons);
-                                cellCounter = 0;
+                                colNumber = 0;
                             }
                         }
                     }
                 }
+
+                // комментарий
                 consultations.RemoveAt(0);
 
                 return "OK";

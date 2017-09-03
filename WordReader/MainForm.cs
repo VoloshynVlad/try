@@ -19,6 +19,7 @@ namespace WordReader
         public MainForm()
         {
             InitializeComponent();
+            KeyPreview = true;
             mainController = new MainController();
         }
 
@@ -76,11 +77,12 @@ namespace WordReader
             {
                 System.Runtime.InteropServices.COMException exp;
                 {
+                    firstDBViewer.DataSource = null;
+                    secondDBViewer.DataSource = null;
                     MessageBox.Show("You must choose file first!");
                     exitCode = -1;
                 };
             }
-
             finally
             {
                 switch (exitCode)
@@ -91,6 +93,8 @@ namespace WordReader
 
                     case -1:
                         parsingStatusStrip.Text = "Error!";
+                        firstDBViewer.DataSource = null;
+
                         break;
                 }
             }
@@ -143,9 +147,21 @@ namespace WordReader
             this.mainController.PathDB = path;
 
             if (path != "")
-                firstDBViewer.DataSource = this.mainController.FillDB(path);
+            {
+                try
+                {
+                    if (this.mainController.CheckDB(path))
+                        firstDBViewer.DataSource = this.mainController.FillDB(path);
+                    else
+                        MessageBox.Show("The DB is incorrect!");
+                }
+                catch
+                {
+                    Exception exp;
+                }
+            }
             else
-                ;
+                MessageBox.Show("Choose BD first");
         }
 
         /// <summary>
@@ -288,8 +304,6 @@ namespace WordReader
         /// </summary>
         private string SelectDB()
         {
-            //TODO dialogresult
-
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.InitialDirectory = this.mainController.ApplicationPath;
             ofd.Filter = "Файлы SQLite (*.db) | *.db";
@@ -337,17 +351,19 @@ namespace WordReader
             ofd.InitialDirectory = Environment.SpecialFolder.Desktop.ToString();//this.mainController.ApplicationPath;
             ofd.Filter = "Файлы Word (*.doc; *.docx) | *.doc; *.docx";
             DialogResult dr = ofd.ShowDialog();
+            string path = "";
 
             if (dr == DialogResult.OK)
             {
                 pathLabel.Text = "";
-                string path = ofd.FileName;
+                path = ofd.FileName;
                 pathLabel.Text = path;
                 this.mainController.SelectedDocument = path;
             }
             else if (dr == DialogResult.Cancel || dr == DialogResult.Abort)
             {
-                ;
+                path = pathLabel.Text;
+                this.mainController.SelectedDocument = path;
             }
             else
             {
@@ -360,12 +376,15 @@ namespace WordReader
         /// </summary>
         private void ParseDocument()
         {
-            //нужно сделать проверку выполнения правильности работы функции ParseDocument
             if (this.mainController.ParseDocument() == "OK")
             {
                 lecturersComboBox.Items.Clear();
                 groupsComboBox.Items.Clear();
                 subjectsComboBox.Items.Clear();
+
+                lecturersComboBox.Items.Add("All");
+                groupsComboBox.Items.Add("All");
+                subjectsComboBox.Items.Add("All");
 
                 string[] lecturers = this.mainController.Lecturers;
                 string[] groups = this.mainController.Groups;
@@ -387,6 +406,54 @@ namespace WordReader
                 parsingStatusStrip.Text = "Done!";
             }
         }
-        #endregion 
+        #endregion
+
+        private void MainForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Control)      
+            {
+                if (e.KeyCode == Keys.S)
+                {
+                    saveToDBButton.PerformClick();
+                    e.SuppressKeyPress = true;  
+                }
+                else if (e.KeyCode == Keys.O)
+                {
+                    selectDocButton.PerformClick();
+                    e.SuppressKeyPress = true;
+                }
+                else if (e.KeyCode == Keys.P)
+                {
+                    parseDocButton.PerformClick();
+                    e.SuppressKeyPress = true;  
+                }
+                else if (e.KeyCode == Keys.C)
+                {
+                    if (compareTablesButton.Visible == true)
+                    {
+                        compareTablesButton.PerformClick();
+                        e.SuppressKeyPress = true;  
+                    }
+                    else
+                        MessageBox.Show("Unabled function");
+                }
+                else if (e.KeyCode == Keys.B)
+                {
+                        selectFirstDBButton.PerformClick();
+                        e.SuppressKeyPress = true;
+                    //else if ((e.KeyCode == Keys.D2) && (selectSecondDBButton.Visible = true))
+                    //{
+                    //    selectSecondDBButton.PerformClick();
+                    //    e.SuppressKeyPress = true;
+                    //}
+                    //else
+                    //    e.SuppressKeyPress = false;
+                }
+                else
+                    e.SuppressKeyPress = false;
+            }
+        }
+
+
     }
 }

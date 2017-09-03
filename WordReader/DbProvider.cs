@@ -32,8 +32,6 @@ namespace WordReader
             SQLiteConnection.CreateFile(path);
             SQLiteConnection connection = new SQLiteConnection(string.Format("Data Source={0};", path));
 
-//            string createTableQuery = "CREATE TABLE consultations (id INTEGER PRIMARY KEY AUTOINCREMENT,"
-  //                      + "name TEXT, subject TEXT, groop TEXT, date TEXT, time TEXT, place TEXT, addition TEXT);";
             string createTableQuery = "CREATE TABLE consultations ("
                       + "name TEXT, subject TEXT, groop TEXT, date TEXT, time TEXT, place TEXT, addition TEXT);";
 
@@ -46,6 +44,7 @@ namespace WordReader
             }
             catch (Exception ex)
             {
+                return false;
             }
 
             string insertRowToDB = "INSERT INTO 'consultations' ('name', 'subject', 'groop', 'date', 'time'," +
@@ -82,6 +81,7 @@ namespace WordReader
                 }
                 catch (Exception ex)
                 {
+                    return false;
                 }
             }
             connection.Close();
@@ -99,7 +99,8 @@ namespace WordReader
             DataTable dt = null;
             SQLiteConnection connection = new SQLiteConnection(string.Format("Data Source={0};", databaseName));
 
-            SQLiteCommand cmd = new SQLiteCommand("SELECT * FROM 'consultations'", connection);
+            SQLiteCommand cmd = new SQLiteCommand("SELECT name, subject, groop, date, time," +
+                                   "place, addition FROM 'consultations'", connection);
             DataSet ds = new DataSet();
 
             try
@@ -119,6 +120,34 @@ namespace WordReader
                 connection.Close();
             }
             return dt;
+        }
+
+        /// <summary>
+        /// Метод для проверки корректности открываемой БД.
+        /// </summary>
+        /// <param name="path">Путь к БД.</param>
+        /// <returns></returns>
+        internal bool isDBCorrect(string path) 
+        {
+            SQLiteConnection connection = new SQLiteConnection(string.Format("Data Source={0};", path));
+            SQLiteCommand cmd = new SQLiteCommand("SELECT name, subject, groop, date, time," +
+                                   "place, addition FROM 'consultations'", connection);
+
+            try
+            {
+                connection.Open();
+                cmd.ExecuteNonQuery();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+            finally
+            {
+                cmd.Dispose();
+                connection.Close();
+            }            
         }
     }
 }

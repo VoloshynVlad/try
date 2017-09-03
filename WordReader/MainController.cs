@@ -15,17 +15,41 @@ namespace WordReader
     class MainController
     {
 		#region Properties.
-		//TODO: публичным свойствам хмл-комменты точно нужны.
 
-        public string SelectedDocument { get; set; }
+        /// <summary>
+        /// Путь выбранного документа.
+        /// </summary>
+        public string SelectedDocument { get; set; }      
+
+        /// <summary>
+        /// Путь к базе данных.
+        /// </summary>
         public string PathDB { get; set; }
+
+        /// <summary>
+        /// Путь к базе данных, с которой будет происходить
+        /// сравнение.
+        /// </summary>
         public string PathForComparedDB { get; set; }
+
+        /// <summary>
+        /// Обьект WordProvider, отвечает за парсинг документа.
+        /// </summary>
         public WordProvider wp { get; set; }
+
+        /// <summary>
+        /// Путь по которому находится программа.
+        /// </summary>
         public readonly string ApplicationPath;
+
+        /// <summary>
+        /// Список для хранения консультаций считанных из документа или загруженных
+        /// из базы данных, которая будет сравниваться с информацие из второй базы данных.
+        /// </summary>
         List<Consultation> consultations = new List<Consultation>();
 
         /// <summary>
-        /// Свойство get возвращающее массив консультаций.
+        /// Свойство get возвращающее массив консультаций первой базы данных.
         /// </summary>
         public Consultation[] Consultations
         {
@@ -35,7 +59,15 @@ namespace WordReader
             }
         }
 
+        /// <summary>
+        /// Список для хранения консультаций считанных из документа или загруженных
+        /// из базы данных, с которым будет сравниваться информация в первой базе данных.
+        /// </summary>
         List<Consultation> consultationsSecondary = new List<Consultation>();
+
+        /// <summary>
+        /// Свойство get возвращающее массив консультаций второй базы данных.
+        /// </summary>
         public Consultation[] ConsultationsSecondary
         {
             get
@@ -44,10 +76,9 @@ namespace WordReader
             }
         }
 
-
         private DbProvider dbProvider;
 
-        List<string> lecturers = new List<string>();
+        private List<string> lecturers = new List<string>();
 
         /// <summary>
         /// Свойство get возвращающее массив лекторов.
@@ -60,7 +91,7 @@ namespace WordReader
             }
         }
 
-        List<string> groups = new List<string>();
+        private List<string> groups = new List<string>();
 
         /// <summary>
         /// Свойство get возвращающее массив групп.
@@ -73,8 +104,8 @@ namespace WordReader
             }
         }
 
-        List<string> subjects = new List<string>();
-
+        private List<string> subjects = new List<string>();
+        
         /// <summary>
         /// Свойство get возвращающее массив предметов.
         /// </summary>
@@ -138,6 +169,19 @@ namespace WordReader
         {
             wp = new WordProvider();
             return wp.ReadDoc(SelectedDocument, lecturers, subjects, groups, consultations);
+        }
+
+        /// <summary>
+        /// Проверка правильности БД.
+        /// </summary>
+        /// <param name="pathToDB">Путь к БД.</param>
+        /// <returns></returns>
+        public bool CheckDB(string pathToDB)
+        {
+            if (this.dbProvider.isDBCorrect(pathToDB))
+                return true;
+            else
+                return false;
         }
     }
 }
