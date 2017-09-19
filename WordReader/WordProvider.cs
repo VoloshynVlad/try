@@ -5,7 +5,7 @@ using Word = Microsoft.Office.Interop.Word;
 namespace WordReader
 {
     /// <summary>
-    /// 
+    /// Класс для работы с файлами Microsoft Office Word
     /// </summary>
     class WordProvider
     {
@@ -142,7 +142,8 @@ namespace WordReader
                     }
                 }
 
-                // комментарий
+                //Удаление первой записи в коллекции
+                //где хранятся заголовки столбцов таблицы.
                 consultations.RemoveAt(0);
 
                 return "OK";

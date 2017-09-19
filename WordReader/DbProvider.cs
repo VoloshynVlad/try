@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Data.SQLite;
 using System.Data;
 
@@ -127,12 +123,11 @@ namespace WordReader
         /// </summary>
         /// <param name="path">Путь к БД.</param>
         /// <returns></returns>
-        internal bool isDBCorrect(string path) 
+        internal bool isDBCorrect(string path)
         {
             SQLiteConnection connection = new SQLiteConnection(string.Format("Data Source={0};", path));
             SQLiteCommand cmd = new SQLiteCommand("SELECT name, subject, groop, date, time," +
                                    "place, addition FROM 'consultations'", connection);
-
             try
             {
                 connection.Open();
@@ -147,7 +142,7 @@ namespace WordReader
             {
                 cmd.Dispose();
                 connection.Close();
-            }            
+            }
         }
     }
 }

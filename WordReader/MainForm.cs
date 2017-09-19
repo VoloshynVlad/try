@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Threading;
 
 namespace WordReader
 {
@@ -52,6 +53,12 @@ namespace WordReader
 
             parsingStatusStrip.Text = "Parsing started...";
 
+            firstBDPath.Text = "";
+            firstBDPath.Text = "DB path:";
+
+            secondDBPath.Text = "";
+            secondDBPath.Text = "DB path:";
+
             this.mainController.ClearConsultationArray();
 
             lecturersComboBox.Items.Clear();
@@ -61,17 +68,16 @@ namespace WordReader
             try
             {
                 ParseDocument();
-
-                //if (firstDBViewer.RowCount == 0)
-                //{
-                BindingSource bind = new BindingSource { DataSource = this.mainController.Consultations };
-                firstDBViewer.DataSource = bind;
-                //}
-                //else
-                //{
-                //    BindingSource bind = new BindingSource { DataSource = this.mainController.Consultations };
-                //    secondDBViewer.DataSource = bind;
-                //}
+                if (firstDBViewer.DataSource == null)
+                {
+                    BindingSource bind = new BindingSource { DataSource = this.mainController.Consultations };
+                    firstDBViewer.DataSource = bind;
+                }
+                else
+                {
+                    BindingSource bind = new BindingSource { DataSource = this.mainController.ConsultationsSecondary };
+                    secondDBViewer.DataSource = bind;
+                }
             }
             catch
             {
@@ -109,29 +115,7 @@ namespace WordReader
         /// <param name="e"></param>
         private void saveToDBButton_Click(object sender, EventArgs e)
         {
-            // TODO: вынести в отдельный метод
-            try
-            {
-                label5.Text = "";
-                this.mainController.PathDB = "";
-                string path = SelectPathToSaveDB();
-                label5.Text = path;
-                this.mainController.PathDB = path;
-
-                if (firstDBViewer.RowCount == 0)
-                {
-                    MessageBox.Show("Nothing to save to DB");
-                }
-                else
-                {
-                    if (!this.mainController.SaveToDB(path))
-                        MessageBox.Show("DB with such name already exists");
-                }
-            }
-            catch (ArgumentException exp)
-            {
-                MessageBox.Show("DB must have name.");
-            }
+            SaveToDB();
         }
 
         /// <summary>
@@ -143,15 +127,38 @@ namespace WordReader
         /// <param name="e"></param>     
         private void selectFirstDBButton_Click(object sender, EventArgs e)
         {
+            firstBDPath.Text = "";
+            firstBDPath.Text = "DB path:";
+
             string path = SelectDB();
             this.mainController.PathDB = path;
+
+            firstBDPath.Text += path;
 
             if (path != "")
             {
                 try
                 {
                     if (this.mainController.CheckDB(path))
-                        firstDBViewer.DataSource = this.mainController.FillDB(path);
+                    {
+                        this.mainController.ClearConsultationArray();
+
+                        lecturersComboBox.Items.Clear();
+                        subjectsComboBox.Items.Clear();
+                        groupsComboBox.Items.Clear();
+
+                        DataTable dt = this.mainController.FillDB(path);
+                        firstDBViewer.DataSource = dt;
+
+                        ///
+                        for (int i = 0; i < dt.Rows.Count; i++)
+                        {
+                            for (int j = 0; j < dt.Columns.Count; j++)
+                            {
+                            }
+                        }
+                        ///
+                    }
                     else
                         MessageBox.Show("The DB is incorrect!");
                 }
@@ -177,7 +184,7 @@ namespace WordReader
                 selectSecondDBButton.Visible = true;
                 compareTablesButton.Visible = true;
                 secondDBViewer.Visible = true;
-                label6.Visible = true;
+                secondDBPath.Visible = true;
                 this.Size = new System.Drawing.Size(1146, 666);
             }
             else
@@ -185,7 +192,7 @@ namespace WordReader
                 selectSecondDBButton.Visible = false;
                 compareTablesButton.Visible = false;
                 secondDBViewer.Visible = false;
-                label6.Visible = false;
+                secondDBPath.Visible = false;
                 this.Size = new System.Drawing.Size(1146, 424);
             }
         }
@@ -198,8 +205,13 @@ namespace WordReader
         /// <param name="e"></param>
         private void selectSecondDBButton_Click(object sender, EventArgs e)
         {
+            secondDBPath.Text = "";
+            secondDBPath.Text = "DB path:";
+
             string path = SelectDB();
             this.mainController.PathForComparedDB = path;
+
+            secondDBPath.Text += path;
 
             if (path != "")
                 secondDBViewer.DataSource = this.mainController.FillDB(path);
@@ -292,9 +304,209 @@ namespace WordReader
             }
             catch (ArgumentOutOfRangeException)
             {
+
             }
         }
 
+        /// <summary>
+        /// Обработка нажатия горячих клавиш
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MainForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Control)
+            {
+                if (e.KeyCode == Keys.S)
+                {
+                    saveToDBButton.PerformClick();
+                    e.SuppressKeyPress = true;
+                }
+                else if (e.KeyCode == Keys.O)
+                {
+                    selectDocButton.PerformClick();
+                    e.SuppressKeyPress = true;
+                }
+                else if (e.KeyCode == Keys.P)
+                {
+                    parseDocButton.PerformClick();
+                    e.SuppressKeyPress = true;
+                }
+                else if (e.KeyCode == Keys.C)
+                {
+                    if (compareTablesButton.Visible == true)
+                    {
+                        compareTablesButton.PerformClick();
+                        e.SuppressKeyPress = true;
+                    }
+                    else
+                        MessageBox.Show("Unabled function");
+                }
+                else if (e.KeyCode == Keys.Q)
+                {
+                    selectFirstDBButton.PerformClick();
+                    e.SuppressKeyPress = true;
+                }
+                else if (e.KeyCode == Keys.W)
+                {
+                    if (compareTablesButton.Visible == true)
+                    {
+                        selectSecondDBButton.PerformClick();
+                        e.SuppressKeyPress = true;
+                    }
+                    else
+                        MessageBox.Show("Unabled function");
+                }
+                else if (e.KeyCode == Keys.F)
+                {
+                    filterButton.PerformClick();
+                    e.SuppressKeyPress = true;
+                }
+                else
+                    e.SuppressKeyPress = false;
+            }
+        }
+
+        /// <summary>
+        /// Синхронный фокус на строках в двух dataGridView по нажатию стрелок
+        /// в firstDBViewer
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void firstDBViewer_KeyDown(object sender, KeyEventArgs e)
+        {
+            try
+            {
+                if (e.KeyCode == Keys.Down)
+                {
+                    secondDBViewer.CurrentCell =
+                        secondDBViewer.Rows[firstDBViewer.CurrentCell.RowIndex + 1]
+                        .Cells[firstDBViewer.CurrentCell.ColumnIndex];
+                }
+
+                if (e.KeyCode == Keys.Up)
+                {
+                    secondDBViewer.CurrentCell =
+                        secondDBViewer.Rows[firstDBViewer.CurrentCell.RowIndex - 1]
+                        .Cells[firstDBViewer.CurrentCell.ColumnIndex];
+                }
+
+                if (e.KeyCode == Keys.Left)
+                {
+                    secondDBViewer.CurrentCell =
+                        secondDBViewer.Rows[firstDBViewer.CurrentCell.RowIndex]
+                        .Cells[firstDBViewer.CurrentCell.ColumnIndex - 1];
+                }
+
+                if (e.KeyCode == Keys.Right)
+                {
+                    secondDBViewer.CurrentCell =
+                        secondDBViewer.Rows[firstDBViewer.CurrentCell.RowIndex]
+                        .Cells[firstDBViewer.CurrentCell.ColumnIndex + 1];
+                }
+            }
+            catch
+            {
+                Exception exp;
+            }
+        }
+
+        /// <summary>
+        /// Синхронный фокус на строках в двух dataGridView по нажатию стрелок
+        /// в secondDBViewer
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void secondDBViewer_KeyDown(object sender, KeyEventArgs e)
+        {
+            try
+            {
+                if (e.KeyCode == Keys.Down)
+                {
+                    firstDBViewer.CurrentCell =
+                       firstDBViewer.Rows[secondDBViewer.CurrentCell.RowIndex + 1]
+                        .Cells[secondDBViewer.CurrentCell.ColumnIndex];
+                }
+
+                if (e.KeyCode == Keys.Up)
+                {
+                    firstDBViewer.CurrentCell =
+                        firstDBViewer.Rows[secondDBViewer.CurrentCell.RowIndex - 1]
+                        .Cells[secondDBViewer.CurrentCell.ColumnIndex];
+                }
+
+                if (e.KeyCode == Keys.Left)
+                {
+                    firstDBViewer.CurrentCell =
+                        firstDBViewer.Rows[secondDBViewer.CurrentCell.RowIndex]
+                        .Cells[secondDBViewer.CurrentCell.ColumnIndex - 1];
+                }
+
+                if (e.KeyCode == Keys.Right)
+                {
+                    firstDBViewer.CurrentCell =
+                        firstDBViewer.Rows[secondDBViewer.CurrentCell.RowIndex]
+                        .Cells[secondDBViewer.CurrentCell.ColumnIndex + 1];
+                }
+            }
+            catch
+            {
+                Exception exp;
+            }
+        }
+
+        /// <summary>
+        /// Индекс отсортированной колонки.
+        /// </summary>
+        /// <remarks>Для последовательной двухколоночной сортировки, учитывающей сортировку внутри групп.</remarks>
+        int m_lastSortedColumnIndex = 0;
+
+        /// <summary>
+        /// Направление сортировки отсортированной колонки.
+        /// </summary>
+        /// <remarks>Для последовательной двухколоночной сортировки, учитывающей сортировку внутри групп.</remarks>
+        bool m_lastSortedColumnAscending = true;
+
+        private void firstDBViewer_SortCompare(object sender, DataGridViewSortCompareEventArgs e)
+        {
+            // сортировка столбцов по умолчанию
+            e.SortResult = System.String.Compare(e.CellValue1.ToString(), e.CellValue2.ToString());
+
+            // сортировка столбца, значения которого числа, а не строки.
+            if (e.Column.Index == 1)
+            {
+                double a = double.Parse(e.CellValue1.ToString());
+                double b = double.Parse(e.CellValue2.ToString());
+                e.SortResult = a.CompareTo(b);
+            }
+
+            // для последовательной двухколоночной сортировки, учитывающей сортировку внутри групп
+            if (e.SortResult == 0 && e.Column.Index != m_lastSortedColumnIndex)
+            {
+                //сортировка столбца, значения которого числа, а не строки.
+                if (m_lastSortedColumnIndex == 1)
+                {
+                    double a = double.Parse(firstDBViewer.Rows[m_lastSortedColumnAscending ? e.RowIndex1 : e.RowIndex2].Cells[m_lastSortedColumnIndex].Value.ToString());
+                    double b = double.Parse(firstDBViewer.Rows[m_lastSortedColumnAscending ? e.RowIndex2 : e.RowIndex1].Cells[m_lastSortedColumnIndex].Value.ToString());
+                    e.SortResult = a.CompareTo(b);
+                }
+                else
+                {
+                    string a = firstDBViewer.Rows[m_lastSortedColumnAscending ? e.RowIndex1 : e.RowIndex2].Cells[m_lastSortedColumnIndex].Value.ToString();
+                    string b = firstDBViewer.Rows[m_lastSortedColumnAscending ? e.RowIndex2 : e.RowIndex1].Cells[m_lastSortedColumnIndex].Value.ToString();
+                    e.SortResult = System.String.Compare(a, b);
+                }
+            }
+
+            e.Handled = true;
+        }
+
+        private void firstDBViewer_Sorted(object sender, EventArgs e)
+        {
+            // сохранение параметров текщей сортировки - что за колонка и в каком направлении сортировалась
+            m_lastSortedColumnIndex = firstDBViewer.SortedColumn.Index;
+            m_lastSortedColumnAscending = firstDBViewer.SortedColumn.HeaderCell.SortGlyphDirection == SortOrder.Ascending ? true : false;
+        }
         #endregion
 
         #region Логика.
@@ -305,18 +517,25 @@ namespace WordReader
         private string SelectDB()
         {
             OpenFileDialog ofd = new OpenFileDialog();
-            ofd.InitialDirectory = this.mainController.ApplicationPath;
+            ofd.InitialDirectory = Environment.SpecialFolder.Desktop.ToString();//this.mainController.ApplicationPath;
             ofd.Filter = "Файлы SQLite (*.db) | *.db";
 
             DialogResult dr = ofd.ShowDialog();
+            string path = "";
 
             if (dr == DialogResult.OK)
             {
-                return ofd.FileName;
+                path = ofd.FileName;
+                return path;
+            }
+            else if (dr == DialogResult.Cancel || dr == DialogResult.Abort)
+            {
+                path = pathLabel.Text;
+                return path;
             }
             else
             {
-                return ofd.FileName;
+                return "-";
             }
         }
 
@@ -326,18 +545,58 @@ namespace WordReader
         private string SelectPathToSaveDB()
         {
             SaveFileDialog sfd = new SaveFileDialog();
-            sfd.InitialDirectory = this.mainController.ApplicationPath;
+            sfd.InitialDirectory = Environment.SpecialFolder.Desktop.ToString();
             sfd.Filter = "Файлы SQLite (*.db) | *.db";
             sfd.FileName = DateTime.Now.ToString().Replace(':', '-') + ".db";
             DialogResult dr = sfd.ShowDialog();
+            string path = "";
 
             if (dr == DialogResult.OK)
             {
-                return sfd.FileName;
+                path = sfd.FileName;
+                return path;
+            }
+            else if (dr == DialogResult.Cancel || dr == DialogResult.Abort)
+            {
+                path = "";
+                return path;
             }
             else
             {
                 return "";
+            }
+        }
+
+        /// <summary>
+        /// Функция сохранения в базу данных.
+        /// </summary>
+        private void SaveToDB()
+        {
+            try
+            {
+                string path = "";
+
+                if (firstDBViewer.RowCount > 0)
+                {
+                    firstBDPath.Text = "";
+                    this.mainController.PathDB = "";
+                    path = SelectPathToSaveDB();
+                    firstBDPath.Text = path;
+                    this.mainController.PathDB = path;
+                }
+                else if (firstDBViewer.RowCount == 0)
+                {
+                    MessageBox.Show("Nothing to save to DB");
+                }
+                else
+                {
+                    if (!this.mainController.SaveToDB(path))
+                        MessageBox.Show("DB with such name already exists");
+                }
+            }
+            catch (ArgumentException exp)
+            {
+                MessageBox.Show("DB must have name.");
             }
         }
 
@@ -408,52 +667,17 @@ namespace WordReader
         }
         #endregion
 
-        private void MainForm_KeyDown(object sender, KeyEventArgs e)
+        private void filterButton_Click(object sender, EventArgs e)
         {
-            if (e.Control)      
+            BindingSource bind = new BindingSource
             {
-                if (e.KeyCode == Keys.S)
-                {
-                    saveToDBButton.PerformClick();
-                    e.SuppressKeyPress = true;  
-                }
-                else if (e.KeyCode == Keys.O)
-                {
-                    selectDocButton.PerformClick();
-                    e.SuppressKeyPress = true;
-                }
-                else if (e.KeyCode == Keys.P)
-                {
-                    parseDocButton.PerformClick();
-                    e.SuppressKeyPress = true;  
-                }
-                else if (e.KeyCode == Keys.C)
-                {
-                    if (compareTablesButton.Visible == true)
-                    {
-                        compareTablesButton.PerformClick();
-                        e.SuppressKeyPress = true;  
-                    }
-                    else
-                        MessageBox.Show("Unabled function");
-                }
-                else if (e.KeyCode == Keys.B)
-                {
-                        selectFirstDBButton.PerformClick();
-                        e.SuppressKeyPress = true;
-                    //else if ((e.KeyCode == Keys.D2) && (selectSecondDBButton.Visible = true))
-                    //{
-                    //    selectSecondDBButton.PerformClick();
-                    //    e.SuppressKeyPress = true;
-                    //}
-                    //else
-                    //    e.SuppressKeyPress = false;
-                }
-                else
-                    e.SuppressKeyPress = false;
-            }
+                DataSource = this.mainController.FilterRecords(
+                    lecturersComboBox.SelectedItem.ToString(),
+                    subjectsComboBox.SelectedItem.ToString(),
+                    groupsComboBox.SelectedItem.ToString())
+            };
+            firstDBViewer.DataSource = bind;
+
         }
-
-
     }
 }

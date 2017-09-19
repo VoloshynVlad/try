@@ -25,7 +25,7 @@ namespace WordReader
         /// <param name="time">Пара проведения консультации</param>
         /// <param name="place">Место проведения консультации</param>
         /// <param name="addition">Дополнение</param>
-        public Consultation( string lecturer, string subject, string group, string date, string time,
+        public Consultation(string lecturer, string subject, string group, string date, string time,
                             string place, string addition)
         {
             Lecturer = lecturer;

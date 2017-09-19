@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Data;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Word = Microsoft.Office.Interop.Word;
 
 namespace WordReader
@@ -14,12 +12,12 @@ namespace WordReader
     /// </summary>
     class MainController
     {
-		#region Properties.
+        #region Properties.
 
         /// <summary>
         /// Путь выбранного документа.
         /// </summary>
-        public string SelectedDocument { get; set; }      
+        public string SelectedDocument { get; set; }
 
         /// <summary>
         /// Путь к базе данных.
@@ -105,7 +103,7 @@ namespace WordReader
         }
 
         private List<string> subjects = new List<string>();
-        
+
         /// <summary>
         /// Свойство get возвращающее массив предметов.
         /// </summary>
@@ -116,8 +114,8 @@ namespace WordReader
                 return subjects.ToArray();
             }
         }
-		
-		#endregion
+
+        #endregion
 
         /// <summary>
         /// Конструктор
@@ -182,6 +180,84 @@ namespace WordReader
                 return true;
             else
                 return false;
+        }
+
+        /// <summary>
+        /// Метод выполняющий фильтрацию коллекций по параметрам.
+        /// </summary>
+        /// <param name="lecturer">Имя преподавателя.</param>
+        /// <param name="subject">Название предмета.</param>
+        /// <param name="group">Номер группы.</param>
+        /// <returns></returns>
+        public List<Consultation> FilterRecords(string lecturer, string subject, string group)
+        {
+            List<Consultation> selectedCons = new List<Consultation>();
+
+            if (lecturer == "All" && subject == "All" && group == "All")
+                selectedCons = Consultations.ToList();
+
+            if (lecturer != "All" && subject != "All" && group != "All")
+                selectedCons = Consultations.Where(c => (c.Lecturer == lecturer))
+                                            .Where(c => (c.Subject == subject))
+                                            .Where(c => (c.Group == group)).ToList();
+
+            if (lecturer == "All" || subject == "All" || group == "All")
+            {
+                if (lecturer == "All")
+                {
+                    if (subject == "All" && group != "All")
+                    {
+                        selectedCons = Consultations.Where(c => (c.Group == group)).ToList();
+                    }
+                    else if (subject != "All" && group == "All")
+                    {
+                        selectedCons = Consultations.Where(c => (c.Subject == subject)).ToList();
+                    }
+                    else if (subject != "All" && group != "All")
+                    {
+                        selectedCons = Consultations.Where(c => (c.Subject == subject))
+                                                    .Where(c => (c.Group == group)).ToList();
+                    }
+                }
+                if (subject == "All")
+                {
+                    if (lecturer == "All" && group != "All")
+                    {
+                        selectedCons = Consultations.Where(c => (c.Group == group)).ToList();
+                    }
+                    else if (lecturer == "All" && group != "All")
+                    {
+                        selectedCons = Consultations.Where(c => (c.Lecturer == lecturer)).ToList();
+                    }
+                    else if (lecturer != "All" && group != "All")
+                    {
+                        selectedCons = Consultations.Where(c => (c.Lecturer == lecturer))
+                                                    .Where(c => (c.Group == group)).ToList();
+                    }
+                }
+                if (group == "All")
+                {
+                    if (lecturer == "All" && subject != "All")
+                    {
+                        selectedCons = Consultations.Where(c => (c.Subject == subject)).ToList();
+                    }
+                    else if (lecturer != "All" && subject == "All")
+                    {
+                        selectedCons = Consultations.Where(c => (c.Lecturer == lecturer)).ToList();
+                    }
+                    else if (lecturer != "All" && subject != "All")
+                    {
+                        selectedCons = Consultations.Where(c => (c.Lecturer == lecturer))
+                                                    .Where(c => (c.Subject == subject)).ToList();
+                    }
+                }
+                if (subject == "All" && group == "All" && lecturer != "All")
+                {
+                    selectedCons = Consultations.Where(c => (c.Lecturer == lecturer)).ToList();
+                }
+            }
+
+            return selectedCons;
         }
     }
 }

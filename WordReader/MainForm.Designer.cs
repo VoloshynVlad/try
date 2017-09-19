@@ -41,18 +41,20 @@
             this.label4 = new System.Windows.Forms.Label();
             this.firstDBViewer = new System.Windows.Forms.DataGridView();
             this.secondDBViewer = new System.Windows.Forms.DataGridView();
-            this.label6 = new System.Windows.Forms.Label();
+            this.secondDBPath = new System.Windows.Forms.Label();
             this.selectSecondDBButton = new System.Windows.Forms.Button();
             this.compareTablesButton = new System.Windows.Forms.Button();
-            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.parsingStatusBar = new System.Windows.Forms.ToolStripProgressBar();
             this.parsingStatusStrip = new System.Windows.Forms.ToolStripStatusLabel();
             this.filters = new System.Windows.Forms.GroupBox();
-            this.label5 = new System.Windows.Forms.Label();
+            this.firstBDPath = new System.Windows.Forms.Label();
             this.comparationCheckBox = new System.Windows.Forms.CheckBox();
+            this.backgroundWorker = new System.ComponentModel.BackgroundWorker();
+            this.filterButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.firstDBViewer)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.secondDBViewer)).BeginInit();
-            this.statusStrip1.SuspendLayout();
+            this.statusStrip.SuspendLayout();
             this.filters.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -170,6 +172,9 @@
             this.firstDBViewer.Size = new System.Drawing.Size(775, 236);
             this.firstDBViewer.TabIndex = 12;
             this.firstDBViewer.Scroll += new System.Windows.Forms.ScrollEventHandler(this.firstDBViewer_Scroll);
+            this.firstDBViewer.SortCompare += new System.Windows.Forms.DataGridViewSortCompareEventHandler(this.firstDBViewer_SortCompare);
+            this.firstDBViewer.Sorted += new System.EventHandler(this.firstDBViewer_Sorted);
+            this.firstDBViewer.KeyDown += new System.Windows.Forms.KeyEventHandler(this.firstDBViewer_KeyDown);
             // 
             // secondDBViewer
             // 
@@ -183,16 +188,17 @@
             this.secondDBViewer.Size = new System.Drawing.Size(775, 214);
             this.secondDBViewer.TabIndex = 12;
             this.secondDBViewer.Visible = false;
+            this.secondDBViewer.KeyDown += new System.Windows.Forms.KeyEventHandler(this.secondDBViewer_KeyDown);
             // 
-            // label6
+            // secondDBPath
             // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(93, 378);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(57, 13);
-            this.label6.TabIndex = 13;
-            this.label6.Text = "DB name: ";
-            this.label6.Visible = false;
+            this.secondDBPath.AutoSize = true;
+            this.secondDBPath.Location = new System.Drawing.Point(93, 378);
+            this.secondDBPath.Name = "secondDBPath";
+            this.secondDBPath.Size = new System.Drawing.Size(57, 13);
+            this.secondDBPath.TabIndex = 13;
+            this.secondDBPath.Text = "DB name: ";
+            this.secondDBPath.Visible = false;
             // 
             // selectSecondDBButton
             // 
@@ -207,7 +213,7 @@
             // 
             // compareTablesButton
             // 
-            this.compareTablesButton.Location = new System.Drawing.Point(877, 299);
+            this.compareTablesButton.Location = new System.Drawing.Point(880, 336);
             this.compareTablesButton.Name = "compareTablesButton";
             this.compareTablesButton.Size = new System.Drawing.Size(96, 23);
             this.compareTablesButton.TabIndex = 15;
@@ -216,16 +222,16 @@
             this.compareTablesButton.Visible = false;
             this.compareTablesButton.Click += new System.EventHandler(this.compareTablesButton_Click);
             // 
-            // statusStrip1
+            // statusStrip
             // 
-            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.parsingStatusBar,
             this.parsingStatusStrip});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 377);
-            this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(1140, 22);
-            this.statusStrip1.TabIndex = 16;
-            this.statusStrip1.Text = "statusStrip1";
+            this.statusStrip.Location = new System.Drawing.Point(0, 377);
+            this.statusStrip.Name = "statusStrip";
+            this.statusStrip.Size = new System.Drawing.Size(1140, 22);
+            this.statusStrip.TabIndex = 16;
+            this.statusStrip.Text = "statusStrip1";
             // 
             // parsingStatusBar
             // 
@@ -252,19 +258,19 @@
             this.filters.TabStop = false;
             this.filters.Text = "Filters";
             // 
-            // label5
+            // firstBDPath
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(93, 106);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(57, 13);
-            this.label5.TabIndex = 13;
-            this.label5.Text = "DB name: ";
+            this.firstBDPath.AutoSize = true;
+            this.firstBDPath.Location = new System.Drawing.Point(93, 106);
+            this.firstBDPath.Name = "firstBDPath";
+            this.firstBDPath.Size = new System.Drawing.Size(52, 13);
+            this.firstBDPath.TabIndex = 13;
+            this.firstBDPath.Text = "DB path: ";
             // 
             // comparationCheckBox
             // 
             this.comparationCheckBox.AutoSize = true;
-            this.comparationCheckBox.Location = new System.Drawing.Point(880, 276);
+            this.comparationCheckBox.Location = new System.Drawing.Point(883, 313);
             this.comparationCheckBox.Name = "comparationCheckBox";
             this.comparationCheckBox.Size = new System.Drawing.Size(85, 17);
             this.comparationCheckBox.TabIndex = 18;
@@ -272,17 +278,28 @@
             this.comparationCheckBox.UseVisualStyleBackColor = true;
             this.comparationCheckBox.CheckedChanged += new System.EventHandler(this.comparationCheckBox_CheckedChanged);
             // 
+            // filterButton
+            // 
+            this.filterButton.Location = new System.Drawing.Point(880, 276);
+            this.filterButton.Name = "filterButton";
+            this.filterButton.Size = new System.Drawing.Size(75, 23);
+            this.filterButton.TabIndex = 19;
+            this.filterButton.Text = "Filter";
+            this.filterButton.UseVisualStyleBackColor = true;
+            this.filterButton.Click += new System.EventHandler(this.filterButton_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1140, 399);
+            this.Controls.Add(this.filterButton);
             this.Controls.Add(this.comparationCheckBox);
             this.Controls.Add(this.filters);
-            this.Controls.Add(this.statusStrip1);
+            this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.compareTablesButton);
-            this.Controls.Add(this.label6);
-            this.Controls.Add(this.label5);
+            this.Controls.Add(this.secondDBPath);
+            this.Controls.Add(this.firstBDPath);
             this.Controls.Add(this.secondDBViewer);
             this.Controls.Add(this.firstDBViewer);
             this.Controls.Add(this.pathLabel);
@@ -298,8 +315,8 @@
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyDown);
             ((System.ComponentModel.ISupportInitialize)(this.firstDBViewer)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.secondDBViewer)).EndInit();
-            this.statusStrip1.ResumeLayout(false);
-            this.statusStrip1.PerformLayout();
+            this.statusStrip.ResumeLayout(false);
+            this.statusStrip.PerformLayout();
             this.filters.ResumeLayout(false);
             this.filters.PerformLayout();
             this.ResumeLayout(false);
@@ -322,14 +339,16 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.DataGridView firstDBViewer;
         private System.Windows.Forms.DataGridView secondDBViewer;
-        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label secondDBPath;
         private System.Windows.Forms.Button selectSecondDBButton;
         private System.Windows.Forms.Button compareTablesButton;
-        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.StatusStrip statusStrip;
         private System.Windows.Forms.ToolStripProgressBar parsingStatusBar;
         private System.Windows.Forms.ToolStripStatusLabel parsingStatusStrip;
         private System.Windows.Forms.GroupBox filters;
-        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label firstBDPath;
         private System.Windows.Forms.CheckBox comparationCheckBox;
+        private System.ComponentModel.BackgroundWorker backgroundWorker;
+        private System.Windows.Forms.Button filterButton;
     }
 }
