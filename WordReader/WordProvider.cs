@@ -10,6 +10,20 @@ namespace WordReader
     class WordProvider
     {
         /// <summary>
+        /// Перечисление столбцов в таблице.
+        /// </summary>
+        enum tableColumns {
+            name = 2,
+            subject,
+            group, 
+            date, 
+            time, 
+            place, 
+            addition,
+            end
+        }
+
+        /// <summary>
         /// Лист который хранит расположения начала и конца
         /// строк в таблице.
         /// </summary>
@@ -71,7 +85,7 @@ namespace WordReader
                         {
                             colNumber++;
 
-                            if (colNumber == 2 && r.Text.ToString() != "\r\a")
+                            if (colNumber == (int)tableColumns.name && r.Text.ToString() != "\r\a")
                             {
                                 name = r.Text.ToString().Trim(new Char[] { '\r', '\a' });
 
@@ -79,7 +93,7 @@ namespace WordReader
                                     lecturers.Add(name);
                             }
 
-                            if (colNumber == 3 && r.Text.ToString() != "\r\a")
+                            if (colNumber == (int)tableColumns.subject && r.Text.ToString() != "\r\a")
                             {
                                 subject = r.Text.ToString().Trim(new Char[] { '\r', '\a' });
 
@@ -87,7 +101,7 @@ namespace WordReader
                                     subjects.Add(subject);
                             }
 
-                            if (colNumber == 4 && r.Text.ToString() != "\r\a")
+                            if (colNumber == (int)tableColumns.group && r.Text.ToString() != "\r\a")
                             {
                                 group = r.Text.ToString().Trim(new Char[] { '\r', '\a' });
 
@@ -95,7 +109,7 @@ namespace WordReader
                                     groups.Add(group);
                             }
 
-                            if (colNumber == 5)
+                            if (colNumber == (int)tableColumns.date)
                             {
                                 date = "";
                                 if (r.Text.ToString() == "\r\a")
@@ -104,7 +118,7 @@ namespace WordReader
                                     date = r.Text.ToString().Trim(new Char[] { '\r', '\a' });
                             }
 
-                            if (colNumber == 6)
+                            if (colNumber == (int)tableColumns.time)
                             {
                                 time = "";
 
@@ -114,7 +128,7 @@ namespace WordReader
                                     time = r.Text.ToString().Trim(new Char[] { '\r', '\a' });
                             }
 
-                            if (colNumber == 7)
+                            if (colNumber == (int)tableColumns.place)
                             {
                                 place = "";
                                 if (r.Text.ToString() == "\r\a")
@@ -123,7 +137,7 @@ namespace WordReader
                                     place = r.Text.ToString().Trim(new Char[] { '\r', '\a' });
                             }
 
-                            if (colNumber == 8)
+                            if (colNumber == (int)tableColumns.addition)
                             {
                                 addition = "";
                                 if (r.Text.ToString() == "\r\a")
@@ -131,7 +145,7 @@ namespace WordReader
                                 else
                                     addition = r.Text.ToString().Trim(new Char[] { '\r', '\a' });
                             }
-                            if (colNumber == 9)
+                            if (colNumber == (int)tableColumns.end)
                             {
                                 Consultation cons = new Consultation(name, subject, group, date,
                                                                      time, place, addition);

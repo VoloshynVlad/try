@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace WordReader
+﻿namespace WordReader
 {
     /// <summary>
     /// Класс описывающий консультацию
