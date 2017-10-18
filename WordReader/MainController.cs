@@ -23,8 +23,7 @@ namespace WordReader
         public string PathDB { get; set; }
 
         /// <summary>
-        /// Путь к базе данных, с которой будет происходить
-        /// сравнение.
+        /// Путь к сравниваемой базе данных.
         /// </summary>
         public string PathForComparedDB { get; set; }
 
@@ -112,7 +111,6 @@ namespace WordReader
                 return subjects.ToArray();
             }
         }
-
         #endregion
 
         /// <summary>
@@ -125,11 +123,21 @@ namespace WordReader
         }
 
         /// <summary>
-        /// Очистка списка консультаций
+        /// Очистка списка консультаций.
         /// </summary>
         public void ClearConsultationArray()
         {
             this.consultations.Clear();
+        }
+
+        /// <summary>
+        /// Очистка коллекций, для записи новой информации после парсинга.
+        /// </summary>
+        public void ClearALL() 
+        {
+            this.groups.Clear();
+            this.lecturers.Clear();
+            this.subjects.Clear();
         }
 
         /// <summary>

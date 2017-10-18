@@ -41,10 +41,10 @@ namespace WordReader
         /// Функция чтения документа.
         /// </summary>
         /// <param name="selectedDocument">Путь к документу для парсинга.</param>
-        /// <param name="lecturers">Лист считанных лекторов.</param>
-        /// <param name="subjects">Лист считанных предметов.</param>
-        /// <param name="groups">Лист считанных групп.</param>
-        /// <param name="consultations">Лист со всеми считанным консультациями.</param>
+        /// <param name="lecturers">Список считанных лекторов.</param>
+        /// <param name="subjects">Список считанных предметов.</param>
+        /// <param name="groups">Список считанных групп.</param>
+        /// <param name="consultations">Список с консультациями.</param>
         /// <returns></returns>
         public string ReadDoc(string selectedDocument, List<string> lecturers, List<string> subjects,
                              List<string> groups, List<Consultation> consultations)
@@ -74,7 +74,6 @@ namespace WordReader
                 int colNumber = 0;
                 string name = "", subject = "", group = "", date = "", time = "", place = "", addition = "";
 
-                int p = doc.Paragraphs.Count;
                 for (int par = 1; par <= doc.Paragraphs.Count; par++)
                 {
                     Word.Range r = doc.Paragraphs[par].Range;

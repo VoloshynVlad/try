@@ -72,9 +72,13 @@ namespace WordReader
         private void selectFirstDBButton_Click(object sender, EventArgs e)
         {
             // TODO: вынести в отдельный метод
-            // TODO: создавать коллекции элементов по данным из бд 
             firstBDPath.Text = "";
             firstBDPath.Text = "DB path:";
+
+            List<Consultation> Consultations = new List<Consultation>();
+            List<string> lecturers = new List<string>();
+            List<string> subjects = new List<string>();
+            List<string> groups = new List<string>();
 
             string path = SelectDB();
             this.mainController.PathDB = path;
@@ -83,27 +87,82 @@ namespace WordReader
 
             if (path != "")
             {
+                this.mainController.ClearALL();
+
+                lecturersComboBox.Items.Clear();
+                groupsComboBox.Items.Clear();
+                subjectsComboBox.Items.Clear();
+
+                lecturersComboBox.Items.Add("All");
+                groupsComboBox.Items.Add("All");
+                subjectsComboBox.Items.Add("All");
+
+                lecturersComboBox.SelectedIndex = 0;
+                groupsComboBox.SelectedIndex = 0;
+                subjectsComboBox.SelectedIndex = 0;
+
+                string name = "", subject = "", group = "", date = "", time = "", place = "", addition = "";
+
                 try
                 {
                     if (this.mainController.CheckDB(path))
                     {
                         this.mainController.ClearConsultationArray();
 
-                        lecturersComboBox.Items.Clear();
-                        subjectsComboBox.Items.Clear();
-                        groupsComboBox.Items.Clear();
-
                         DataTable dt = this.mainController.FillDB(path);
                         firstDBViewer.DataSource = dt;
 
-                        ///
+
                         for (int i = 0; i < dt.Rows.Count; i++)
                         {
                             for (int j = 0; j < dt.Columns.Count; j++)
                             {
+                                if (j == 0)
+                                {
+                                    name = dt.Rows[i][j].ToString();
+
+                                    if (!lecturers.Contains(name))
+                                        lecturers.Add(name);
+                                }
+                                if (j == 1)
+                                {
+                                    subject = dt.Rows[i][j].ToString();
+
+                                    if (!subjects.Contains(subject))
+                                        subjects.Add(subject);
+                                }
+                                if (j == 2)
+                                {
+                                    group = dt.Rows[i][j].ToString();
+
+                                    if (!groups.Contains(group))
+                                        groups.Add(group);
+                                }
+
+                                if (j == 3)
+                                {
+                                    date = dt.Rows[i][j].ToString();
+
+                                }
+                                if (j == 4)
+                                {
+                                    time = dt.Rows[i][j].ToString();
+
+                                }
+                                if (j == 5)
+                                {
+                                    place = dt.Rows[i][j].ToString();
+                                }
+                                if (j == 6)
+                                {
+                                    addition = dt.Rows[i][j].ToString();
+
+                                }
                             }
+                            Consultation cons = new Consultation(name, subject, group, date,
+                                                                time, place, addition);
+                            Consultations.Add(cons);
                         }
-                        ///
                     }
                     else
                         MessageBox.Show("The DB is incorrect!");
@@ -112,6 +171,13 @@ namespace WordReader
                 {
                     Exception exp;
                 }
+
+                for (int i = 0; i < lecturers.Count; i++)
+                    lecturersComboBox.Items.Add(lecturers[i].ToString().Trim(new Char[] { '\r', '\a' }));
+                for (int i = 0; i < groups.Count; i++)
+                    groupsComboBox.Items.Add(groups[i].ToString().Trim(new Char[] { '\r', '\a' }));
+                for (int i = 0; i < subjects.Count; i++)
+                    subjectsComboBox.Items.Add(subjects[i].ToString().Trim(new Char[] { '\r', '\a' }));
             }
             else
                 MessageBox.Show("Choose BD first");
@@ -305,18 +371,18 @@ namespace WordReader
         private void filterButton_Click(object sender, EventArgs e)
         {
             // TODO: фильтрация должна работать для второй таблицы тоже
-            try 
-            { 
-            BindingSource bind = new BindingSource
+            try
             {
-                DataSource = this.mainController.FilterRecords(
-                    lecturersComboBox.SelectedItem.ToString(),
-                    subjectsComboBox.SelectedItem.ToString(),
-                    groupsComboBox.SelectedItem.ToString())
-            };
-            firstDBViewer.DataSource = bind;
+                BindingSource bind = new BindingSource
+                {
+                    DataSource = this.mainController.FilterRecords(
+                        lecturersComboBox.SelectedItem.ToString(),
+                        subjectsComboBox.SelectedItem.ToString(),
+                        groupsComboBox.SelectedItem.ToString())
+                };
+                firstDBViewer.DataSource = bind;
             }
-            catch 
+            catch
             {
                 Exception exp;
             }
@@ -608,6 +674,8 @@ namespace WordReader
         /// </summary>
         private void ParseDocument()
         {
+            this.mainController.ClearALL();
+
             if (this.mainController.ParseDocument() == "OK")
             {
                 lecturersComboBox.Items.Clear();
@@ -617,6 +685,8 @@ namespace WordReader
                 lecturersComboBox.Items.Add("All");
                 groupsComboBox.Items.Add("All");
                 subjectsComboBox.Items.Add("All");
+
+
 
                 string[] lecturers = this.mainController.Lecturers;
                 string[] groups = this.mainController.Groups;
