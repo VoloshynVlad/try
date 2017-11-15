@@ -4,17 +4,48 @@ using Word = Microsoft.Office.Interop.Word;
 
 namespace WordReader
 {
+    /// <summary>
+    /// Класс для работы с файлами Microsoft Office Word
+    /// </summary>
     class WordProvider
     {
-		//TODO: комменты!
+        /// <summary>
+        /// Перечисление столбцов в таблице.
+        /// </summary>
+        enum tableColumns {
+            name = 2,
+            subject,
+            group, 
+            date, 
+            time, 
+            place, 
+            addition,
+            end
+        }
 
+        /// <summary>
+        /// Лист который хранит расположения начала и конца
+        /// строк в таблице.
+        /// </summary>
         public List<Word.Range> TablesRanges { get; set; }
 
+        /// <summary>
+        /// Конструктор.
+        /// </summary>
         public WordProvider()
         {
 
         }
 
+        /// <summary>
+        /// Функция чтения документа.
+        /// </summary>
+        /// <param name="selectedDocument">Путь к документу для парсинга.</param>
+        /// <param name="lecturers">Список считанных лекторов.</param>
+        /// <param name="subjects">Список считанных предметов.</param>
+        /// <param name="groups">Список считанных групп.</param>
+        /// <param name="consultations">Список с консультациями.</param>
+        /// <returns></returns>
         public string ReadDoc(string selectedDocument, List<string> lecturers, List<string> subjects,
                              List<string> groups, List<Consultation> consultations)
         {
@@ -40,78 +71,97 @@ namespace WordReader
                     TablesRanges.Add(TRange);
                 }
 
-                int cellCounter = 0;
+                int colNumber = 0;
                 string name = "", subject = "", group = "", date = "", time = "", place = "", addition = "";
 
-                int p = doc.Paragraphs.Count;
                 for (int par = 1; par <= doc.Paragraphs.Count; par++)
                 {
                     Word.Range r = doc.Paragraphs[par].Range;
-                    
+
                     foreach (Word.Range range in TablesRanges)
                     {
                         if (r.Start >= range.Start && r.Start <= range.End)
                         {
-                            cellCounter++;
+                            colNumber++;
 
-                            if (cellCounter == 2 && r.Text.ToString() != "\r\a")
+                            if (colNumber == (int)tableColumns.name && r.Text.ToString() != "\r\a")
                             {
                                 name = r.Text.ToString().Trim(new Char[] { '\r', '\a' });
+
                                 if (!lecturers.Contains(name))
                                     lecturers.Add(name);
                             }
 
-                            if (cellCounter == 3 && r.Text.ToString() != "\r\a")
+                            if (colNumber == (int)tableColumns.subject && r.Text.ToString() != "\r\a")
                             {
                                 subject = r.Text.ToString().Trim(new Char[] { '\r', '\a' });
+
                                 if (!subjects.Contains(subject))
                                     subjects.Add(subject);
                             }
 
-                            if (cellCounter == 4 && r.Text.ToString() != "\r\a")
+                            if (colNumber == (int)tableColumns.group && r.Text.ToString() != "\r\a")
                             {
                                 group = r.Text.ToString().Trim(new Char[] { '\r', '\a' });
+
                                 if (!groups.Contains(group))
                                     groups.Add(group);
                             }
 
-                            if (cellCounter == 5 && r.Text.ToString() != "\r\a")
+                            if (colNumber == (int)tableColumns.date)
                             {
-                                date = r.Text.ToString().Trim(new Char[] { '\r', '\a' });
+                                date = "";
+                                if (r.Text.ToString() == "\r\a")
+                                    date = "-";
+                                else
+                                    date = r.Text.ToString().Trim(new Char[] { '\r', '\a' });
                             }
 
-                            if (cellCounter == 6 && r.Text.ToString() != "\r\a")
+                            if (colNumber == (int)tableColumns.time)
                             {
-                                time = r.Text.ToString().Trim(new Char[] { '\r', '\a' });
+                                time = "";
+
+                                if (r.Text.ToString() == "\r\a")
+                                    time = "-";
+                                else
+                                    time = r.Text.ToString().Trim(new Char[] { '\r', '\a' });
                             }
 
-                            if (cellCounter == 7 && r.Text.ToString() != "\r\a")
+                            if (colNumber == (int)tableColumns.place)
                             {
-                                place = r.Text.ToString().Trim(new Char[] { '\r', '\a' });
+                                place = "";
+                                if (r.Text.ToString() == "\r\a")
+                                    place = "-";
+                                else
+                                    place = r.Text.ToString().Trim(new Char[] { '\r', '\a' });
                             }
 
-                            if (cellCounter == 8)
+                            if (colNumber == (int)tableColumns.addition)
                             {
+                                addition = "";
                                 if (r.Text.ToString() == "\r\a")
                                     addition = "-";
                                 else
                                     addition = r.Text.ToString().Trim(new Char[] { '\r', '\a' });
                             }
-                            if (cellCounter == 9)
+                            if (colNumber == (int)tableColumns.end)
                             {
                                 Consultation cons = new Consultation(name, subject, group, date,
                                                                      time, place, addition);
                                 consultations.Add(cons);
-                                cellCounter = 0;
+                                colNumber = 0;
                             }
                         }
                     }
                 }
+
+                //Удаление первой записи в коллекции
+                //где хранятся заголовки столбцов таблицы.
                 consultations.RemoveAt(0);
 
                 return "OK";
             }
-            catch ( System.Runtime.InteropServices.COMException ex)
+            catch (System.Runtime.InteropServices.COMException ex)
             {
                 return ex.Message;
             }
@@ -126,7 +176,7 @@ namespace WordReader
                 if (doc != null)
                     System.Runtime.InteropServices.Marshal.ReleaseComObject(doc);
                 if (wordApp != null)
-                    System.Runtime.InteropServices.Marshal.ReleaseComObject(wordApp);      
+                    System.Runtime.InteropServices.Marshal.ReleaseComObject(wordApp);
 
                 doc = null;
                 word = null;
