@@ -153,7 +153,7 @@ namespace WordReader
                 return false;
             }
 
-            return this.dbProvider.SaveToDB(path, consultations.ToArray());
+            return this.dbProvider.SaveToDB(path, Consultations);
         }
 
         /// <summary>
@@ -163,7 +163,62 @@ namespace WordReader
         /// <returns>DataTable.</returns>
         public DataTable FillDB(string pathToDB)
         {
-            return this.dbProvider.FillDB(pathToDB);
+            var dataTable = this.dbProvider.FillDB(pathToDB);
+
+            string name = "", subject = "", group = "", date = "", time = "", place = "", addition = "";
+            for (int i = 0; i < dataTable.Rows.Count; i++)
+            {
+                for (int j = 0; j < dataTable.Columns.Count; j++)
+                {
+                    if (j == 0)
+                    {
+                        name = dataTable.Rows[i][j].ToString();
+
+                        if (!lecturers.Contains(name))
+                            lecturers.Add(name);
+                    }
+                    if (j == 1)
+                    {
+                        subject = dataTable.Rows[i][j].ToString();
+
+                        if (!subjects.Contains(subject))
+                            subjects.Add(subject);
+                    }
+                    if (j == 2)
+                    {
+                        group = dataTable.Rows[i][j].ToString();
+
+                        if (!groups.Contains(group))
+                            groups.Add(group);
+                    }
+
+                    if (j == 3)
+                    {
+                        date = dataTable.Rows[i][j].ToString();
+
+                    }
+                    if (j == 4)
+                    {
+                        time = dataTable.Rows[i][j].ToString();
+
+                    }
+                    if (j == 5)
+                    {
+                        place = dataTable.Rows[i][j].ToString();
+                    }
+                    if (j == 6)
+                    {
+                        addition = dataTable.Rows[i][j].ToString();
+
+                    }
+                }
+                Consultation cons = new Consultation(name, subject, group, date,
+                                                    time, place, addition);
+                //this.mainController.Consultations.A
+                consultations.Add(cons);
+            }
+
+            return dataTable;
         }
 
         /// <summary>

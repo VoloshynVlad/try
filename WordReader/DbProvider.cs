@@ -48,7 +48,7 @@ namespace WordReader
 
             SQLiteCommand insert_command = new SQLiteCommand(insertRowToDB, connection);
 
-            for (int i = 1; i < consultations.Length; i++)
+            for (int i = 0; i < consultations.Length; i++)
             {
                 insert_command.Parameters.Add("@Name", DbType.String);
                 insert_command.Parameters.AddWithValue("@Name", consultations[i].Lecturer.Trim('\r', '\a'));
