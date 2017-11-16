@@ -533,47 +533,47 @@ namespace WordReader
                 path = sfd.FileName;
                 return path;
             }
-            else if (dr == DialogResult.Cancel || dr == DialogResult.Abort)
-            {
-                path = "";
-                return path;
-            }
             else
             {
-                return "";
+                if (dr == DialogResult.Cancel || dr == DialogResult.Abort)
+                {
+                    path = "";
+                    return path;
+                }
+                else
+                {
+                    MessageBox.Show("Error path to DB");
+                    return "";
+                }
             }
         }
 
         /// <summary>
-        /// Функция сохранения в базу данных.
+        /// Сохранение в базу данных.
         /// </summary>
         private void SaveToDB()
         {
-            try
+            if (firstDBViewer.RowCount == 0) // привязка к отображению, а не к самой базе - спорно. Оправдано было бы, если сохраняться будет только то, что есть в гриде, но ведь сохраняется вся коллекция.
             {
-                string path = "";
-
-                if (firstDBViewer.RowCount > 0)
-                {
-                    firstBDPath.Text = "";
-                    this.mainController.PathDB = "";
-                    path = SelectPathToSaveDB();
-                    firstBDPath.Text = path;
-                    this.mainController.PathDB = path;
-                }
-                else if (firstDBViewer.RowCount == 0)
-                {
-                    MessageBox.Show("Nothing to save to DB");
-                }
-                else
-                {
-                    if (!this.mainController.SaveToDB(path))
-                        MessageBox.Show("DB with such name already exists");
-                }
+                MessageBox.Show("Nothing to save to DB");
+                return;
             }
-            catch (ArgumentException exp)
+
+            string path = "";
+            this.firstBDPath.Text = "";
+            this.mainController.PathDB = "";
+            path = SelectPathToSaveDB();
+            if (path == "")
             {
-                MessageBox.Show("DB must have name.");
+                return;
+            }
+            this.mainController.PathDB = path;
+            this.firstBDPath.Text = path;
+
+            if (!this.mainController.SaveToDB(path))
+            {
+                MessageBox.Show("Error save to DB");
+                return;
             }
         }
 
