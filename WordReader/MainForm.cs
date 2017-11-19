@@ -24,163 +24,25 @@ namespace WordReader
         }
 
         #region Обработчики событий.
-
-        /// <summary>
-        /// Обработка события нажатия кнопки, которая выбирает текстовый документ 
-        /// формата .doc или .docx, который необходимо распарсить.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        
         private void selectDocButton_Click(object sender, EventArgs e)
         {
             SelectDocument();
         }
-
-        /// <summary>
-        /// Обработка события нажатия кнопки
-        /// которая занимается считыванием документа 
-        /// и созданием List'a объектов Consultation
-        /// по считанным данным заполняет 
-        /// LecturersComboBox, SubjectsComboBox и GroupsComboBox.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+                
         private void parseDocButton_Click(object sender, EventArgs e)
         {
             ParseDoc();
         }
 
-        /// <summary>
-        /// Обработка события нажатия кнопки
-        /// которая создает базу данных и записывает 
-        /// в нее считанную информацию.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void saveToDBButton_Click(object sender, EventArgs e)
         {
             SaveToDB();
         }
-
-        /// <summary>
-        /// Обработчик события нажатия кнопки для выбора первой базы данных,
-        /// с которой будет сравниваться вторая база данных.
-        /// Заполнение элемента FirstDBViewer данными из базы.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>     
+   
         private void selectFirstDBButton_Click(object sender, EventArgs e)
         {
-            // TODO: вынести в отдельный метод
-            firstBDPath.Text = "";
-            firstBDPath.Text = "DB path:";
-
-            List<Consultation> Consultations = new List<Consultation>();
-            List<string> lecturers = new List<string>();
-            List<string> subjects = new List<string>();
-            List<string> groups = new List<string>();
-
-            string path = SelectDB();
-            this.mainController.PathDB = path;
-
-            firstBDPath.Text += path;
-
-            if (path != "")
-            {
-                this.mainController.ClearALL();
-
-                lecturersComboBox.Items.Clear();
-                groupsComboBox.Items.Clear();
-                subjectsComboBox.Items.Clear();
-
-                lecturersComboBox.Items.Add("All");
-                groupsComboBox.Items.Add("All");
-                subjectsComboBox.Items.Add("All");
-
-                lecturersComboBox.SelectedIndex = 0;
-                groupsComboBox.SelectedIndex = 0;
-                subjectsComboBox.SelectedIndex = 0;
-
-                string name = "", subject = "", group = "", date = "", time = "", place = "", addition = "";
-
-                try
-                {
-                    if (this.mainController.CheckDB(path))
-                    {
-                        this.mainController.ClearConsultationArray();
-
-                        DataTable dt = this.mainController.FillDB(path);
-                        firstDBViewer.DataSource = dt;
-
-
-                        for (int i = 0; i < dt.Rows.Count; i++)
-                        {
-                            for (int j = 0; j < dt.Columns.Count; j++)
-                            {
-                                if (j == 0)
-                                {
-                                    name = dt.Rows[i][j].ToString();
-
-                                    if (!lecturers.Contains(name))
-                                        lecturers.Add(name);
-                                }
-                                if (j == 1)
-                                {
-                                    subject = dt.Rows[i][j].ToString();
-
-                                    if (!subjects.Contains(subject))
-                                        subjects.Add(subject);
-                                }
-                                if (j == 2)
-                                {
-                                    group = dt.Rows[i][j].ToString();
-
-                                    if (!groups.Contains(group))
-                                        groups.Add(group);
-                                }
-
-                                if (j == 3)
-                                {
-                                    date = dt.Rows[i][j].ToString();
-
-                                }
-                                if (j == 4)
-                                {
-                                    time = dt.Rows[i][j].ToString();
-
-                                }
-                                if (j == 5)
-                                {
-                                    place = dt.Rows[i][j].ToString();
-                                }
-                                if (j == 6)
-                                {
-                                    addition = dt.Rows[i][j].ToString();
-
-                                }
-                            }
-                            Consultation cons = new Consultation(name, subject, group, date,
-                                                                time, place, addition);
-                            Consultations.Add(cons);
-                        }
-                    }
-                    else
-                        MessageBox.Show("The DB is incorrect!");
-                }
-                catch
-                {
-                    Exception exp;
-                }
-
-                for (int i = 0; i < lecturers.Count; i++)
-                    lecturersComboBox.Items.Add(lecturers[i].ToString().Trim(new Char[] { '\r', '\a' }));
-                for (int i = 0; i < groups.Count; i++)
-                    groupsComboBox.Items.Add(groups[i].ToString().Trim(new Char[] { '\r', '\a' }));
-                for (int i = 0; i < subjects.Count; i++)
-                    subjectsComboBox.Items.Add(subjects[i].ToString().Trim(new Char[] { '\r', '\a' }));
-            }
-            else
-                MessageBox.Show("Choose BD first");
+            LoadFromDB();
         }
 
         /// <summary>
@@ -191,22 +53,7 @@ namespace WordReader
         /// <param name="e"></param>
         private void comparationCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            if (comparationCheckBox.Checked)
-            {
-                selectSecondDBButton.Visible = true;
-                compareTablesButton.Visible = true;
-                secondDBViewer.Visible = true;
-                secondDBPath.Visible = true;
-                this.Size = new System.Drawing.Size(1146, 666);
-            }
-            else
-            {
-                selectSecondDBButton.Visible = false;
-                compareTablesButton.Visible = false;
-                secondDBViewer.Visible = false;
-                secondDBPath.Visible = false;
-                this.Size = new System.Drawing.Size(1146, 424);
-            }
+            splitContainer3.Panel2Collapsed = !comparationCheckBox.Checked;
         }
 
         /// <summary>
@@ -219,25 +66,21 @@ namespace WordReader
         {
             // TODO: вынести в отдельный метод
             // TODO: доработать до вида выбора первой бд
-            secondDBPath.Text = "";
-            secondDBPath.Text = "DB path:";
+            //secondDBPathLabel.Text = "";
+            //secondDBPathLabel.Text = "DB path:";
 
             string path = SelectDB();
             this.mainController.PathForComparedDB = path;
 
-            secondDBPath.Text += path;
+            //secondDBPathLabel.Text += path;
+            db2PathTextBox.Text = path;
 
             if (path != "")
                 secondDBViewer.DataSource = this.mainController.FillDB(path);
             else
                 ;
         }
-
-        /// <summary>
-        /// Нажатие кнопки сравнения содержимого таблиц и отображения различий.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        
         private void compareTablesButton_Click(object sender, EventArgs e)
         {
             CompareTables();
@@ -263,11 +106,9 @@ namespace WordReader
         /// <summary>
         /// Обработка нажатия горячих клавиш
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Control)
+            if (e.Control && e.Shift)
             {
                 if (e.KeyCode == Keys.S)
                 {
@@ -363,29 +204,10 @@ namespace WordReader
             }
         }
 
-        /// <summary>
-        /// Выполнение фильтрации в таблицах по критериям.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void filterButton_Click(object sender, EventArgs e)
         {
-            // TODO: фильтрация должна работать для второй таблицы тоже
-            try
-            {
-                BindingSource bind = new BindingSource
-                {
-                    DataSource = this.mainController.FilterRecords(
-                        lecturersComboBox.SelectedItem.ToString(),
-                        subjectsComboBox.SelectedItem.ToString(),
-                        groupsComboBox.SelectedItem.ToString())
-                };
-                firstDBViewer.DataSource = bind;
-            }
-            catch
-            {
-                Exception exp;
-            }
+            PerformFilter();
+            ViewFilteredData();
         }
 
         /// <summary>
@@ -484,12 +306,57 @@ namespace WordReader
             m_lastSortedColumnIndex = firstDBViewer.SortedColumn.Index;
             m_lastSortedColumnAscending = firstDBViewer.SortedColumn.HeaderCell.SortGlyphDirection == SortOrder.Ascending ? true : false;
         }
+
         #endregion
 
         #region Логика.
 
+        #region Работа с ранее сохраненными данными в БД.
+
         /// <summary>
-        /// Выбор базы данных.
+        /// Заполнение элемента FirstDBViewer данными из базы.
+        /// Выбор первой базы данных, с которой будет сравниваться вторая база данных.
+        /// </summary>        
+        private void LoadFromDB()
+        {
+            //firstBDPath.Text = "";
+            //firstBDPath.Text = "DB path:";
+
+            string path = SelectDB();
+            this.mainController.PathDB = path;
+            dbPathTextBox.Text = path;
+
+            //firstBDPath.Text += path;
+
+            if (path != "")
+            {
+                this.mainController.ClearALL();
+                ResetFilterComboboxes();
+
+                try
+                {
+                    if (this.mainController.CheckDB(path))
+                    {
+                        this.mainController.ClearConsultationArray();
+                        this.mainController.FillDB(path);
+                        BindingSource bind = new BindingSource { DataSource = this.mainController.Consultations };
+                        firstDBViewer.DataSource = bind;
+                        FillFilterOptions();
+                    }
+                    else
+                        MessageBox.Show("The DB is incorrect!");
+                }
+                catch(Exception exp)
+                {
+                    
+                }
+            }
+            else
+                MessageBox.Show("Choose BD first");
+        }
+
+        /// <summary>
+        /// Выбор базы данных для считывания ранее сохраненных данных.
         /// </summary>
         private string SelectDB()
         {
@@ -507,7 +374,7 @@ namespace WordReader
             }
             else if (dr == DialogResult.Cancel || dr == DialogResult.Abort)
             {
-                path = pathLabel.Text;
+                path = docPathTextBox.Text;
                 return path;
             }
             else
@@ -517,7 +384,38 @@ namespace WordReader
         }
 
         /// <summary>
-        /// Запись данных в базу данных.
+        /// Сохранение в базу данных считанной информации.
+        /// </summary>
+        private void SaveToDB()
+        {
+            if (firstDBViewer.RowCount == 0) // привязка к отображению, а не к самой базе - спорно. Оправдано было бы, если сохраняться будет только то, что есть в гриде, но ведь сохраняется вся коллекция.
+            {
+                MessageBox.Show("Nothing to save to DB");
+                return;
+            }
+
+            string path = "";
+            //this.firstBDPath.Text = "";
+            dbPathTextBox.Text = "";
+            this.mainController.PathDB = "";
+            path = SelectPathToSaveDB();
+            if (path == "")
+            {
+                return;
+            }
+            this.mainController.PathDB = path;
+            //this.firstBDPath.Text = path;
+            dbPathTextBox.Text = path;
+
+            if (!this.mainController.SaveToDB(path))
+            {
+                MessageBox.Show("Error save to DB");
+                return;
+            }
+        }
+
+        /// <summary>
+        /// Выбор пути к файлу базы данных для записи.
         /// </summary>
         private string SelectPathToSaveDB()
         {
@@ -533,70 +431,44 @@ namespace WordReader
                 path = sfd.FileName;
                 return path;
             }
-            else if (dr == DialogResult.Cancel || dr == DialogResult.Abort)
-            {
-                path = "";
-                return path;
-            }
             else
             {
-                return "";
-            }
-        }
-
-        /// <summary>
-        /// Функция сохранения в базу данных.
-        /// </summary>
-        private void SaveToDB()
-        {
-            try
-            {
-                string path = "";
-
-                if (firstDBViewer.RowCount > 0)
+                if (dr == DialogResult.Cancel || dr == DialogResult.Abort)
                 {
-                    firstBDPath.Text = "";
-                    this.mainController.PathDB = "";
-                    path = SelectPathToSaveDB();
-                    firstBDPath.Text = path;
-                    this.mainController.PathDB = path;
-                }
-                else if (firstDBViewer.RowCount == 0)
-                {
-                    MessageBox.Show("Nothing to save to DB");
+                    path = "";
+                    return path;
                 }
                 else
                 {
-                    if (!this.mainController.SaveToDB(path))
-                        MessageBox.Show("DB with such name already exists");
+                    MessageBox.Show("Error path to DB");
+                    return "";
                 }
             }
-            catch (ArgumentException exp)
-            {
-                MessageBox.Show("DB must have name.");
-            }
         }
+
+        #endregion
+
+        #region Парсинг вордовского документа.
 
         /// <summary>
         /// Функция парсинга документа.
         /// </summary>
+        /// <remarks>занимается считыванием документа и созданием List'a объектов Consultation
+        /// по считанным данным заполняет LecturersComboBox, SubjectsComboBox и GroupsComboBox.</remarks>
         private void ParseDoc()
         {
             int exitCode = 0;
 
             parsingStatusStrip.Text = "Parsing started...";
 
-            firstBDPath.Text = "";
-            firstBDPath.Text = "DB path:";
+            //firstBDPath.Text = "";
+            //firstBDPath.Text = "DB path:";
 
-            secondDBPath.Text = "";
-            secondDBPath.Text = "DB path:";
+            secondDBPathLabel.Text = "";
+            secondDBPathLabel.Text = "DB path:";
 
             this.mainController.ClearConsultationArray();
-
-            lecturersComboBox.Items.Clear();
-            subjectsComboBox.Items.Clear();
-            groupsComboBox.Items.Clear();
+            ResetFilterComboboxes();
 
             try
             {
@@ -653,14 +525,15 @@ namespace WordReader
 
             if (dr == DialogResult.OK)
             {
-                pathLabel.Text = "";
+                //pathLabel.Text = "";
                 path = ofd.FileName;
-                pathLabel.Text = path;
+                docPathTextBox.Text = path;
+                //pathLabel.Text = path;
                 this.mainController.SelectedDocument = path;
             }
             else if (dr == DialogResult.Cancel || dr == DialogResult.Abort)
             {
-                path = pathLabel.Text;
+                path = docPathTextBox.Text;
                 this.mainController.SelectedDocument = path;
             }
             else
@@ -678,39 +551,140 @@ namespace WordReader
 
             if (this.mainController.ParseDocument() == "OK")
             {
-                lecturersComboBox.Items.Clear();
-                groupsComboBox.Items.Clear();
-                subjectsComboBox.Items.Clear();
-
-                lecturersComboBox.Items.Add("All");
-                groupsComboBox.Items.Add("All");
-                subjectsComboBox.Items.Add("All");
-
-
-
-                string[] lecturers = this.mainController.Lecturers;
-                string[] groups = this.mainController.Groups;
-                string[] subjects = this.mainController.Subjects;
-
-                for (int i = 1; i < lecturers.Length; i++)
-                    lecturersComboBox.Items.Add(lecturers[i].Trim(new Char[] { '\r', '\a' }));
-
-                for (int i = 1; i < groups.Length; i++)
-                    groupsComboBox.Items.Add(groups[i].Trim(new Char[] { '\r', '\a' }));
-
-                for (int i = 1; i < subjects.Length; i++)
-                    subjectsComboBox.Items.Add(subjects[i].Trim(new Char[] { '\r', '\a' }));
-
-                lecturersComboBox.SelectedIndex = 0;
-                groupsComboBox.SelectedIndex = 0;
-                subjectsComboBox.SelectedIndex = 0;
+                FillFilterOptions();
 
                 parsingStatusStrip.Text = "Done!";
             }
         }
 
+        #endregion
+
+        #region Filter.
+
         /// <summary>
-        /// Функция сравнения записей в двух таблицах.
+        /// Выполнение фильтрации в таблицах по критериям.
+        /// </summary>
+        private void PerformFilter()
+        {
+            // TODO: фильтрация должна работать для второй таблицы тоже
+            try
+            {
+                BindingSource bind = new BindingSource
+                {
+                    DataSource = this.mainController.FilterRecords(
+                        lecturersComboBox.SelectedItem.ToString(),
+                        subjectsComboBox.SelectedItem.ToString(),
+                        groupsComboBox.SelectedItem.ToString())
+                };
+                firstDBViewer.DataSource = bind;
+            }
+            catch
+            {
+                Exception exp;
+            }
+        }
+
+        /// <summary>
+        /// Заполнение выпадающих списков, определяющих параметры фильтрации.
+        /// </summary>
+        private void FillFilterOptions()
+        {
+            ResetFilterComboboxes();
+
+            string[] lecturers = this.mainController.Lecturers;
+            string[] groups = this.mainController.Groups;
+            string[] subjects = this.mainController.Subjects;
+
+            for (int i = 0; i < lecturers.Length; i++)
+                lecturersComboBox.Items.Add(lecturers[i].Trim(new Char[] { '\r', '\a' }));
+
+            for (int i = 0; i < groups.Length; i++)
+                groupsComboBox.Items.Add(groups[i].Trim(new Char[] { '\r', '\a' }));
+
+            for (int i = 0; i < subjects.Length; i++)
+                subjectsComboBox.Items.Add(subjects[i].Trim(new Char[] { '\r', '\a' }));
+
+            lecturersComboBox.SelectedIndex = 0;
+            groupsComboBox.SelectedIndex = 0;
+            subjectsComboBox.SelectedIndex = 0;
+        }
+
+        /// <summary>
+        /// Сброс значений выпадающих списков фильтрации.
+        /// </summary>
+        private void ResetFilterComboboxes()
+        {
+            lecturersComboBox.Items.Clear();
+            groupsComboBox.Items.Clear();
+            subjectsComboBox.Items.Clear();
+
+            lecturersComboBox.Items.Add("All");
+            groupsComboBox.Items.Add("All");
+            subjectsComboBox.Items.Add("All");
+        }
+
+        /// <summary>
+        /// Вывести данные из таблице в формате, используемом в табеле почасовки.
+        /// </summary>
+        private void ViewFilteredData()
+        {
+            var filtered = this.mainController.FilterRecords(lecturersComboBox.SelectedItem.ToString(),
+                subjectsComboBox.SelectedItem.ToString(),
+                groupsComboBox.SelectedItem.ToString());
+
+            paresTextBox.Text = "";
+
+            // массив, описывающий время проведения занятий. Нулевой элемент зарезервирован для ошибки - да и нет в природе нулевой пары.
+            string[] pares = {
+                "Error",
+                "7:45-9:20",
+                "9:30-11:05",
+                "11:15-12:50",
+                "13:10-14:45",
+                "14:55-16:30",
+                "16:40-18:15",
+                "18:25-20:00",
+                "20:10-21:45"
+            };
+
+            // каждую строку из графика консультаций, прошедшую фильтр, привести к формату для табеля почасовки.
+            foreach(var f in filtered)
+            {
+                int pareNumber = 0; // номер пары, на которой проводится консультация.
+
+                // если в ячейке номера пары корректное число.
+                if (Int32.TryParse(f.Time, out pareNumber))
+                {
+                    //Int32.TryParse(f.Time, out pareNumber);
+                    paresTextBox.Text += f.Date + "\t" + pares[pareNumber] + ",\t" + f.Group + ";\r\n";
+                    if (f.Addition != "-")
+                    {
+                        //MessageBox.Show("Pollypara!!!");
+                        paresTextBox.Text += "HALF\r\n\r\n";
+                    }
+                }
+                else
+                {
+                    // в некоторых случаях, ячейка номера может содержать больше одного значения. Попробуем их обработать...
+                    if (f.Time.Contains(","))
+                    {
+                        var times = f.Time.Split(',');
+                        foreach (var t in times)
+                        {
+                            Int32.TryParse(t, out pareNumber);
+                            paresTextBox.Text += f.Date + "\t" + pares[pareNumber] + ",\t" + f.Group + ";\r\n";
+                        }
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        #region Cравнениe записей в двух таблицах.
+
+        /// <summary>
+        /// Cравнениe записей в двух таблицах.
         /// </summary>
         private void CompareTables()
         {
@@ -772,6 +746,14 @@ namespace WordReader
                 firstTableData = "";
             }
         }
+
         #endregion
+
+        #endregion
+
+        private void splitContainer2_Panel2_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
     }
 }
