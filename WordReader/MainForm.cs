@@ -54,6 +54,10 @@ namespace WordReader
         private void comparationCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             splitContainer3.Panel2Collapsed = !comparationCheckBox.Checked;
+            if (compareTablesButton.Visible)
+                compareTablesButton.Visible = false;
+            else
+                compareTablesButton.Visible = true;
         }
 
         /// <summary>
