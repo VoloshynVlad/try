@@ -40,6 +40,7 @@ namespace WordReader
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Error: " + ex.Message);
                 return false;
             }
 
@@ -77,6 +78,7 @@ namespace WordReader
                 }
                 catch (Exception ex)
                 {
+                    Console.WriteLine("Error: " + ex.Message);
                     return false;
                 }
             }
@@ -109,6 +111,7 @@ namespace WordReader
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Error: " + ex.Message);
             }
             finally
             {
@@ -136,6 +139,7 @@ namespace WordReader
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Error: " + ex.Message);
                 return false;
             }
             finally

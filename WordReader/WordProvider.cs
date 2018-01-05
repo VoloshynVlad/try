@@ -12,15 +12,16 @@ namespace WordReader
         /// <summary>
         /// Перечисление столбцов в таблице.
         /// </summary>
-        enum tableColumns {
+        enum tableColumns
+        {
             name = 2,
             subject,
-            group, 
-            date, 
-            time, 
-            place, 
+            group,
+            date,
+            time,
+            place,
             addition,
-            end
+            consultation
         }
 
         /// <summary>
@@ -38,6 +39,103 @@ namespace WordReader
         }
 
         /// <summary>
+        /// Создание приложения Word
+        /// </summary>
+        /// <returns></returns>
+        private Word.Application OpenWordApplication()
+        {
+            Word.Application word = new Word.Application();
+
+            return word;
+        }
+
+        /// <summary>
+        /// Открытие указанного документа.
+        /// </summary>
+        /// <param name="selectedDocument">Путь к документу.</param>
+        /// <param name="wordApp"></param>
+        /// <returns></returns>
+        private Word.Document OpenDoc(string selectedDocument, Word.Application wordApp)
+        {
+
+            object filename = selectedDocument;
+            Word.Document doc = null;
+
+            try
+            {
+                doc = wordApp.Documents.Open(ref filename);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error: " + ex.Message);
+
+                doc.Close();
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(doc);
+                wordApp.Quit();
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(wordApp);
+            }
+            return doc;
+        }
+
+        /// <summary>
+        /// Получить все интервалы, содержащиеся в документе.
+        /// </summary>
+        /// <param name="doc"></param>
+        private void GetTableRanges(Word.Document doc)
+        {
+            TablesRanges = new List<Word.Range>();
+
+            if (doc != null)
+            {
+                try
+                {
+                    for (int i = 1; i <= doc.Tables.Count; i++)
+                    {
+                        Word.Range TRange = doc.Tables[i].Range;
+                        TablesRanges.Add(TRange);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error: " + ex.Message);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Добавить значение из таблицы в коллекцию.
+        /// </summary>
+        /// <param name="range"></param>
+        /// <param name="collection"></param>
+        /// <returns></returns>
+        private string GetToCollection(Word.Range range, List<string> collection)
+        {
+            string value = range.Text.ToString().Trim(new Char[] { '\r', '\a' });
+
+            if (!collection.Contains(value))
+                collection.Add(value);
+
+            return value;
+        }
+
+        /// <summary>
+        /// Получить значение из табличного интервала.
+        /// </summary>
+        /// <param name="range"></param>
+        /// <returns></returns>
+        private string GetValueFromRange(Word.Range range)
+        {
+            string value = "";
+
+            if (range.Text.ToString() == "\r\a")
+                value = "-";
+            else
+                value = range.Text.ToString().Trim(new Char[] { '\r', '\a' });
+
+            return value;
+        }
+
+        /// <summary>
         /// Функция чтения документа.
         /// </summary>
         /// <param name="selectedDocument">Путь к документу для парсинга.</param>
@@ -49,31 +147,16 @@ namespace WordReader
         public string ReadDoc(string selectedDocument, List<string> lecturers, List<string> subjects,
                              List<string> groups, List<Consultation> consultations)
         {
-            TablesRanges = new List<Word.Range>();
+            int colNumber = 0;
+            string name = "", subject = "", group = "", date = "", time = "", place = "", addition = "";
+            
+            Word.Application wordApp = OpenWordApplication();
+            Word.Document doc = OpenDoc(selectedDocument, wordApp);
 
-            Word.Application word = new Word.Application();
-            object missing = Type.Missing;
-            object filename = selectedDocument;
-            Word.Document doc = word.Documents.Open(ref filename, ref missing, ref missing,
-                                                    ref missing, ref missing, ref missing,
-                                                    ref missing, ref missing, ref missing,
-                                                    ref missing, ref missing, ref missing,
-                                                    ref missing, ref missing, ref missing,
-                                                    ref missing);
-
-            var wordApp = new Microsoft.Office.Interop.Word.Application();
+            GetTableRanges(doc);
 
             try
             {
-                for (int i = 1; i <= doc.Tables.Count; i++)
-                {
-                    Word.Range TRange = doc.Tables[i].Range;
-                    TablesRanges.Add(TRange);
-                }
-
-                int colNumber = 0;
-                string name = "", subject = "", group = "", date = "", time = "", place = "", addition = "";
-
                 for (int par = 1; par <= doc.Paragraphs.Count; par++)
                 {
                     Word.Range r = doc.Paragraphs[par].Range;
@@ -86,65 +169,40 @@ namespace WordReader
 
                             if (colNumber == (int)tableColumns.name && r.Text.ToString() != "\r\a")
                             {
-                                name = r.Text.ToString().Trim(new Char[] { '\r', '\a' });
-
-                                if (!lecturers.Contains(name))
-                                    lecturers.Add(name);
+                                name = GetToCollection(r, lecturers);
                             }
 
                             if (colNumber == (int)tableColumns.subject && r.Text.ToString() != "\r\a")
                             {
-                                subject = r.Text.ToString().Trim(new Char[] { '\r', '\a' });
-
-                                if (!subjects.Contains(subject))
-                                    subjects.Add(subject);
+                                subject = GetToCollection(r, subjects);
                             }
 
                             if (colNumber == (int)tableColumns.group && r.Text.ToString() != "\r\a")
                             {
-                                group = r.Text.ToString().Trim(new Char[] { '\r', '\a' });
-
-                                if (!groups.Contains(group))
-                                    groups.Add(group);
+                                group = GetToCollection(r, groups);
                             }
 
                             if (colNumber == (int)tableColumns.date)
                             {
-                                date = "";
-                                if (r.Text.ToString() == "\r\a")
-                                    date = "-";
-                                else
-                                    date = r.Text.ToString().Trim(new Char[] { '\r', '\a' });
+                                date = GetValueFromRange(r);
                             }
 
                             if (colNumber == (int)tableColumns.time)
                             {
-                                time = "";
-
-                                if (r.Text.ToString() == "\r\a")
-                                    time = "-";
-                                else
-                                    time = r.Text.ToString().Trim(new Char[] { '\r', '\a' });
+                                time = GetValueFromRange(r);
                             }
 
                             if (colNumber == (int)tableColumns.place)
                             {
-                                place = "";
-                                if (r.Text.ToString() == "\r\a")
-                                    place = "-";
-                                else
-                                    place = r.Text.ToString().Trim(new Char[] { '\r', '\a' });
+                                place = GetValueFromRange(r);
                             }
 
                             if (colNumber == (int)tableColumns.addition)
                             {
-                                addition = "";
-                                if (r.Text.ToString() == "\r\a")
-                                    addition = "-";
-                                else
-                                    addition = r.Text.ToString().Trim(new Char[] { '\r', '\a' });
+                                addition = GetValueFromRange(r);
                             }
-                            if (colNumber == (int)tableColumns.end)
+
+                            if (colNumber == (int)tableColumns.consultation)
                             {
                                 Consultation cons = new Consultation(name, subject, group, date,
                                                                      time, place, addition);
@@ -167,21 +225,10 @@ namespace WordReader
             }
             finally
             {
-                doc.Close(false);
-                word.Quit(false);
-                wordApp.Quit(false);
-
-                if (word != null)
-                    System.Runtime.InteropServices.Marshal.ReleaseComObject(word);
-                if (doc != null)
-                    System.Runtime.InteropServices.Marshal.ReleaseComObject(doc);
-                if (wordApp != null)
-                    System.Runtime.InteropServices.Marshal.ReleaseComObject(wordApp);
-
-                doc = null;
-                word = null;
-                wordApp = null;
-                GC.Collect();
+                doc.Close();
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(doc);
+                wordApp.Quit();
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(wordApp);
             }
         }
     }

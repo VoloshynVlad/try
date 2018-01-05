@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace WordReader
@@ -202,9 +204,9 @@ namespace WordReader
                         .Cells[firstDBViewer.CurrentCell.ColumnIndex + 1];
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                Exception exp;
+                Console.WriteLine("Error: " + ex.Message);
             }
         }
 
@@ -252,9 +254,9 @@ namespace WordReader
                         .Cells[secondDBViewer.CurrentCell.ColumnIndex + 1];
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                Exception exp;
+                Console.WriteLine("Error: " + ex.Message);
             }
         }
 
@@ -350,9 +352,9 @@ namespace WordReader
                     else
                         MessageBox.Show("The DB is incorrect!");
                 }
-                catch(Exception exp)
+                catch (Exception ex)
                 {
-                    
+                    Console.WriteLine("Error: " + ex.Message);
                 }
             }
             else
@@ -461,58 +463,60 @@ namespace WordReader
         /// по считанным данным заполняет LecturersComboBox, SubjectsComboBox и GroupsComboBox.</remarks>
         private void ParseDoc()
         {
-            int exitCode = 0;
+            //Task t = new Task(() =>
+            //    {
+                    int exitCode = 0;
 
-            parsingStatusStrip.Text = "Parsing started...";
+                    parsingStatusStrip.Text = "Parsing started...";
 
-            //firstBDPath.Text = "";
-            //firstBDPath.Text = "DB path:";
+                    //firstBDPath.Text = "";
+                    //firstBDPath.Text = "DB path:";
 
-            secondDBPathLabel.Text = "";
-            secondDBPathLabel.Text = "DB path:";
+                    secondDBPathLabel.Text = "";
+                    secondDBPathLabel.Text = "DB path:";
 
-            this.mainController.ClearConsultationArray();
-            ResetFilterComboboxes();
+                    this.mainController.ClearConsultationArray();
+                    ResetFilterComboboxes();
 
-            try
-            {
-                ParseDocument();
-                //if (firstDBViewer.DataSource == null)
-                //{
-                BindingSource bind = new BindingSource { DataSource = this.mainController.Consultations };
-                firstDBViewer.DataSource = bind;
-                //}
-                //else
-                //{
-                //    BindingSource bind = new BindingSource { DataSource = this.mainController.ConsultationsSecondary };
-                //    secondDBViewer.DataSource = bind;
-                //}
-            }
-            catch
-            {
-                System.Runtime.InteropServices.COMException exp;
-                {
-                    firstDBViewer.DataSource = null;
-                    secondDBViewer.DataSource = null;
-                    MessageBox.Show("You must choose file first!");
-                    exitCode = -1;
-                };
-            }
-            finally
-            {
-                switch (exitCode)
-                {
-                    case 0:
-                        parsingStatusStrip.Text = "Done!";
-                        break;
-
-                    case -1:
-                        parsingStatusStrip.Text = "Error!";
+                    try
+                    {
+                        ParseDocument();
+                        //if (firstDBViewer.DataSource == null)
+                        //{
+                        BindingSource bind = new BindingSource { DataSource = this.mainController.Consultations };
+                        firstDBViewer.DataSource = bind;
+                        //}
+                        //else
+                        //{
+                        //    BindingSource bind = new BindingSource { DataSource = this.mainController.ConsultationsSecondary };
+                        //    secondDBViewer.DataSource = bind;
+                        //}
+                    }
+                    catch (System.Runtime.InteropServices.COMException exp)
+                    {
+                        Console.WriteLine("Error: " + exp.Message);
                         firstDBViewer.DataSource = null;
+                        secondDBViewer.DataSource = null;
+                        MessageBox.Show("You must choose file first!");
+                        exitCode = -1;
+                    }
+                    finally
+                    {
+                        switch (exitCode)
+                        {
+                            case 0:
+                                parsingStatusStrip.Text = "Done!";
+                                break;
 
-                        break;
-                }
-            }
+                            case -1:
+                                parsingStatusStrip.Text = "Error!";
+                                firstDBViewer.DataSource = null;
+
+                                break;
+                        }
+                    }
+            //    });    
+            //t.Start();    
         }
 
         /// <summary>
@@ -582,9 +586,9 @@ namespace WordReader
                 };
                 firstDBViewer.DataSource = bind;
             }
-            catch
+            catch (Exception ex)
             {
-                Exception exp;
+                Console.WriteLine("Error: " + ex.Message);
             }
         }
 
